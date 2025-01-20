@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response  
 from rest_framework.decorators import action
 from .models import Company, Project
@@ -38,7 +38,21 @@ class CompanyViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             raise ValidationError(serializer.errors)
-        
+    
+    @action(detail=False, methods=['get'], url_path='search-by-tin')
+    def search_by_tin(self, request):
+        tin_number = request.query_params.get("tin_number")
+        if not tin_number:
+            return Response({'error': "TIN number is required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            company = Company.objects.get(tin_number=tin_number)
+            serializer = self.get_serializer(company)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Company.DoesNotExist:
+            return Response({'error': "Company not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Catch any unexpected errors
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
@@ -87,3 +101,21 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         # Call the default implementation of create
         return super().create(request, *args, **kwargs)
+
+# class CompanySearchByTINView(viewsets.ModelViewSet):
+#     queryset = Company.objects.all()
+#     serializer_class = CompanySerializer
+    
+#     @action(detail=False, methods=['get'],url_path='search-by-tin')
+#     def search_by_tin(self, request):
+#         tin_number = request.query_params.get("tin_number")
+        
+#         if not tin_number:
+#             return Response({'error': "TIN Number is Required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+#         try:
+#             company = Company.objects.get(tin_number=tin_number)
+#             serializer = self.get_serializer(company)
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         except Company.DoesNotExist:
+#             return Response({'error': "Company not found"}, status=status.HTTP_404_NOT_FOUND)
