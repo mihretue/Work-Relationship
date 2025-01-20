@@ -11,6 +11,7 @@ const DataEntryForm = () => {
         year: '',
         category: '',
         remark: ''
+        
     });
 
     const handleChange = (e) => {
