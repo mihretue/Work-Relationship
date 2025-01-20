@@ -1,0 +1,74 @@
+.users {
+    padding: 40px;
+    background-color: #f9f9f9;
+    /* Light background for contrast */
+    border-radius: 12px;
+    /* Rounded corners */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    /* Deeper shadow for depth */
+    max-width: 600px;
+    /* Limit the width for better appearance */
+    margin: auto;
+    /* Center the form */
+}
+
+.users h2 {
+    text-align: center;
+    color: #333;
+    font-size: 28px;
+    /* Larger font size for the heading */
+    margin-bottom: 20px;
+    /* Space below the heading */
+}
+
+.users form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* Space between form elements */
+}
+
+.users input,
+.users select {
+    width: 100%;
+    /* Use full width of the container */
+    padding: 15px;
+    /* Increased padding for better touch targets */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for border color and shadow */
+    font-size: 16px;
+    /* Increased font size */
+}
+
+.users input:focus,
+.users select:focus {
+    border-color: #007bff;
+    /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    /* Add shadow on focus */
+    outline: none;
+    /* Remove default outline */
+}
+
+.users button {
+    background-color: #007bff;
+    /* Primary button color */
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    /* Smooth transition for background color and scale */
+    font-size: 16px;
+    /* Increased font size for the button */
+}
+
+.users button:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+    transform: scale(1.05);
+    /* Slightly enlarge button on hover */
+}
