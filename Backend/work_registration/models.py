@@ -29,6 +29,6 @@ class Project(models.Model):
     year = models.IntegerField()  # Assuming the year is stored as a 4-digit integer
     categories = models.CharField(max_length=200)  # Could be changed to ManyToManyField if categories are predefined
     status = models.CharField(max_length=50, choices=STATUS_CHOICES,default="unfinished")
-    remark = models.TextField(blank=True, null=True)
+    project_remark = models.TextField(blank=True, null=True)
     def __str__(self):
         return self.project_name
