@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/NewProject.css'; // Import the CSS for styling
 
-const NewProject = () => {
+const NewProject = ({ onProjectCreated }) => {
     const [formData, setFormData] = useState({
         tinNumber: '',
         companyName: '',
@@ -22,10 +22,30 @@ const NewProject = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log('Project Data:', formData);
+        console.log('Project Data:', formData); // Debugging line
+
+        try {
+            const response = await fetch('/api/projects', { // Replace with your API endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                const newProject = await response.json(); // Get the created project data
+                onProjectCreated(newProject); // Call the function to refresh the dashboard
+                console.log('Project created successfully');
+            } else {
+                const errorData = await response.json(); // Get error details
+                console.error('Failed to create project:', errorData);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     return (
