@@ -16,7 +16,16 @@
     transform: scale(1.02);
     /* Slightly enlarge on hover */
 }
-
+.action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .action-buttons button {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  
 .new-project h2 {
     text-align: center;
     color: #333;

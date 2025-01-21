@@ -130,13 +130,71 @@ const NewProject = () => {
   const getNestedValue = (obj, path) => {
     return path.split('.').reduce((acc, key) => acc && acc[key], obj);
   };
+  const handleView = (rowData) => {
+    console.log("Viewing data:", rowData);
+    // Add your view logic here, such as opening a modal with detailed info
+  };
+  
+  const handleDelete = (rowData) => {
+    console.log("Deleting data:", rowData);
+    // Add your delete logic here, such as making an API call to delete
+    setData((prevData) => prevData.filter((item) => item.id !== rowData.id));
+  };
+  
+  const handleForward = (rowData) => {
+    console.log("Forwarding data:", rowData);
+    // Add your forward logic here
+  };
+  
+  const handleEdit = (rowData) => {
+    console.log("Editing data:", rowData);
+    // Add your edit logic here, such as populating the form with row data
+    setFormData(rowData);
+    setIsModalOpen(true); // Open the modal for editing
+  };
+  
   // Table columns definition
   const companyCol = [
     
       { accessorKey: "tin_number", header: "TIN Number" },
       { accessorKey: "manager_name", header: "Manager Name" },
       { accessorKey: "company_name", header: "Company Name" },
-
+      {
+        header: "Actions",
+        accessorKey: "actions", 
+        Cell: ({ row }) => (
+          <div className="action-buttons">
+            <Button
+              size="xs"
+              color="blue"
+              onClick={() => handleView(row.original)}
+            >
+              View
+            </Button>
+            <Button
+              size="xs"
+              color="red"
+              onClick={() => handleDelete(row.original)}
+            >
+              Delete
+            </Button>
+            <Button
+              size="xs"
+              color="green"
+              onClick={() => handleForward(row.original)}
+            >
+              Forward
+            </Button>
+            <Button
+              size="xs"
+              color="yellow"
+              onClick={() => handleEdit(row.original)}
+            >
+              Edit
+            </Button>
+          </div>
+        ),
+      },
     
   ];
   

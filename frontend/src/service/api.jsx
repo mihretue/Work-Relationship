@@ -49,3 +49,9 @@ export const getAllCompanies = () => {
 export const getDataByUrl = (url) => {
     return fetch(`${API_URL}${url}`, getHeader()).then((res) => res.json());
   };
+
+export const createUser = (body)=>{
+  return fetch(`${API_URL}signup/`,postHeader(body)).then((res)=>{
+    res.json()
+  })
+}

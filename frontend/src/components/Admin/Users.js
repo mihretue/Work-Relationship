@@ -1,21 +1,29 @@
 import React, { useState } from 'react';
-import '../styles/Users.css'; // Import the CSS for styling
-
+import '../../styles/Users.css'; // Import the CSS for styling
+import { createUser } from '../../service/api';
 const Users = () => {
     const [userData, setUserData] = useState({
-        name: '',
+        username: '',
         role: '',
-        email: ''
+        password: ''
     });
 
     const handleChange = (e) => {
         setUserData({ ...userData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
-        // Handle user addition logic here
-        console.log('User Data:', userData);
+        try{
+            const response = await createUser(userData)
+            setUserData({
+                username: "",
+                email: "",
+                password: "",
+            });
+        }catch(error){
+            console.error("Error",error)
+        }
     };
 
     return (
@@ -23,9 +31,9 @@ const Users = () => {
             <h2>Add New User</h2>
             <form onSubmit={handleSubmit}>
                 <input
-                    name="name"
+                    name="username"
                     placeholder="User Name"
-                    value={userData.name}
+                    value={userData.username}
                     onChange={handleChange}
                     required
                 />
@@ -37,13 +45,13 @@ const Users = () => {
                 >
                     <option value="">Select Role</option>
                     <option value="director">Director</option>
-                    <option value="groupLeader">Group Leader</option>
+                    <option value="team_leader">Group Leader</option>
                 </select>
                 <input
-                    name="email"
-                    placeholder="Email"
-                    type="email"
-                    value={userData.email}
+                    name="password"
+                    placeholder="Password"
+                    type="password"
+                    value={userData.password}
                     onChange={handleChange}
                     required
                 />
