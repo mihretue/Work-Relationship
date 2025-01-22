@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import '../../styles/Users.css'; // Import the CSS for styling
+import '../../styles/Users.css'; // Corrected import path
 import { createUser } from '../../service/api';
+
 const Users = () => {
     const [userData, setUserData] = useState({
         username: '',
@@ -12,22 +13,22 @@ const Users = () => {
         setUserData({ ...userData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        try{
+        try {
             const response = await createUser(userData)
             setUserData({
                 username: "",
-                email: "",
+                role: "",
                 password: "",
             });
-        }catch(error){
-            console.error("Error",error)
+        } catch (error) {
+            console.error("Error", error)
         }
     };
 
     return (
-        <div className="users">
+        <div className="users" style={{ padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
             <h2>Add New User</h2>
             <form onSubmit={handleSubmit}>
                 <input
