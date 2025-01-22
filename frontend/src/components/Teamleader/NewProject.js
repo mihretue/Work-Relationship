@@ -1,10 +1,9 @@
-
-import React, { useState,useEffect } from "react";
-import { Modal, Button} from "@mantine/core"; 
+import React, { useState, useEffect } from "react";
+import { Modal, Button } from "@mantine/core";
 import { MantineReactTable } from "mantine-react-table"; // Import Mantine React Table
-import "../styles/NewProject.css"; // Import your custom CSS
-import { createProject,getAllCompanies } from "../service/api";
-import { CustomizableMantineTable } from "../common/customeTable";
+import "../../styles/NewProject.css"; // Corrected import path
+import { createProject, getAllCompanies } from "../../service/api";
+import { CustomizableMantineTable } from "../../common/customeTable";
 const NewProject = () => {
   const [formData, setFormData] = useState({
     tin_number: "",
@@ -32,8 +31,6 @@ const NewProject = () => {
   const [projects, setProjects] = useState([]); // State to manage project data for the table
   const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle the modal
   const [refetch, setRefetch] = useState(false);
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -118,8 +115,8 @@ const NewProject = () => {
   const fetchCompanies = async () => {
     setIsLoading(true);
     try {
-      const companyData = await getAllCompanies(); 
-      console.log("Company DAta",companyData[1].projects)
+      const companyData = await getAllCompanies();
+      console.log("Company DAta", companyData[1].projects);
       setData(companyData); // Set the fetched data
     } catch (error) {
       console.error("Error loading companies:", error);
@@ -131,80 +128,80 @@ const NewProject = () => {
     fetchCompanies(); // Call the fetch function when the component mounts
   }, []);
   const getNestedValue = (obj, path) => {
-    return path.split('.').reduce((acc, key) => acc && acc[key], obj);
+    return path.split(".").reduce((acc, key) => acc && acc[key], obj);
   };
   const handleView = (rowData) => {
     console.log("Viewing data:", rowData);
     // Add your view logic here, such as opening a modal with detailed info
   };
-  
+
   const handleDelete = (rowData) => {
     console.log("Deleting data:", rowData);
     // Add your delete logic here, such as making an API call to delete
     setData((prevData) => prevData.filter((item) => item.id !== rowData.id));
   };
-  
+
   const handleForward = (rowData) => {
     console.log("Forwarding data:", rowData);
     // Add your forward logic here
   };
-  
+
   const handleEdit = (rowData) => {
     console.log("Editing data:", rowData);
     // Add your edit logic here, such as populating the form with row data
     setFormData(rowData);
     setIsModalOpen(true); // Open the modal for editing
   };
-  
+
   // Table columns definition
   const companyCol = [
-    
-      { accessorKey: "tin_number", header: "TIN Number" },
-      { accessorKey: "manager_name", header: "Manager Name" },
-      { accessorKey: "company_name", header: "Company Name" },
-      {
-        header: "Actions",
-        accessorKey: "actions", 
-        Cell: ({ row }) => (
-          <div className="action-buttons">
-            <Button
-              size="xs"
-              color="blue"
-              onClick={() => handleView(row.original)}
-            >
-              View
-            </Button>
-            <Button
-              size="xs"
-              color="red"
-              onClick={() => handleDelete(row.original)}
-            >
-              Delete
-            </Button>
-            <Button
-              size="xs"
-              color="green"
-              onClick={() => handleForward(row.original)}
-            >
-              Forward
-            </Button>
-            <Button
-              size="xs"
-              color="yellow"
-              onClick={() => handleEdit(row.original)}
-            >
-              Edit
-            </Button>
-          </div>
-        ),
-      },
-    
+    { accessorKey: "tin_number", header: "TIN Number" },
+    { accessorKey: "manager_name", header: "Manager Name" },
+    { accessorKey: "company_name", header: "Company Name" },
+    {
+      header: "Actions",
+      accessorKey: "actions",
+      Cell: ({ row }) => (
+        <div className="action-buttons">
+          <Button
+            size="xs"
+            color="blue"
+            onClick={() => handleView(row.original)}
+          >
+            View
+          </Button>
+          <Button
+            size="xs"
+            color="red"
+            onClick={() => handleDelete(row.original)}
+          >
+            Delete
+          </Button>
+          <Button
+            size="xs"
+            color="green"
+            onClick={() => handleForward(row.original)}
+          >
+            Forward
+          </Button>
+          <Button
+            size="xs"
+            color="yellow"
+            onClick={() => handleEdit(row.original)}
+          >
+            Edit
+          </Button>
+        </div>
+      ),
+    },
   ];
-  
+
   return (
     <div className="new-project">
       {/* New Project Button */}
-      <Button size={16}  onClick={() => setIsModalOpen(true)}>New Project</Button>
+      <Button size={16} onClick={() => setIsModalOpen(true)}>
+        New Project
+      </Button>
       {/* <CustomizableMantineTable
           endPoint="companies/"
           columns={companyCol}
@@ -212,16 +209,16 @@ const NewProject = () => {
           setRefetch={setRefetch}
           // finalData={[{ tin_number: "1234", manager_name: "John Doe" }]}
         /> */}
-        <MantineReactTable
-          columns={companyCol}
-          data={data}
-          state={{
-            isLoading, // Show loading state
-          }}
-          enableSorting
-          enablePagination
-          enableGlobalFilter
-    />
+      <MantineReactTable
+        columns={companyCol}
+        data={data}
+        state={{
+          isLoading, // Show loading state
+        }}
+        enableSorting
+        enablePagination
+        enableGlobalFilter
+      />
       {/* Modal for the Form */}
       <Modal
         opened={isModalOpen}
@@ -262,53 +259,55 @@ const NewProject = () => {
             />
           </div>
           <div className="form-row">
-                    <select
-                        name="company_type"
-                        value={formData.company_type}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Company Type</option>
-                        <option value="Software Development">Software Development</option>
-                        <option value="Construction">Construction</option>
-                    </select>
-                    <select
-                        name="grade"
-                        value={formData.grade}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Grade</option>
-                        <option value="A">Grade A</option>
-                        <option value="B">Grade B</option>
-                    </select>
-            </div>
-            <div className="form-row">
-                    <select
-                        name="organization"
-                        value={formData.organization}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Organization</option>
-                        <option value="Tech Group">Tech Group</option>
-                    </select>
-                    <select
-                        name="performance"
-                        value={formData.performance}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Performance</option>
-                        <option value="Excellent performance in AI development and software solutions.">Excellent performance in AI development and software solutions.</option>
-                    </select>
-                </div>
-                <textarea
-                    name="remark"
-                    placeholder="Additional Remarks"
-                    value={formData.remark}
-                    onChange={handleChange}
-                ></textarea>
+            <select
+              name="company_type"
+              value={formData.company_type}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Company Type</option>
+              <option value="Software Development">Software Development</option>
+              <option value="Construction">Construction</option>
+            </select>
+            <select
+              name="grade"
+              value={formData.grade}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Grade</option>
+              <option value="A">Grade A</option>
+              <option value="B">Grade B</option>
+            </select>
+          </div>
+          <div className="form-row">
+            <select
+              name="organization"
+              value={formData.organization}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Organization</option>
+              <option value="Tech Group">Tech Group</option>
+            </select>
+            <select
+              name="performance"
+              value={formData.performance}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Performance</option>
+              <option value="Excellent performance in AI development and software solutions.">
+                Excellent performance in AI development and software solutions.
+              </option>
+            </select>
+          </div>
+          <textarea
+            name="remark"
+            placeholder="Additional Remarks"
+            value={formData.remark}
+            onChange={handleChange}
+          ></textarea>
           <div className="form-row">
             <input
               name="project_name"
@@ -344,29 +343,27 @@ const NewProject = () => {
             />
           </div>
           <div className="form-row">
-                    <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="unfinished">Unfinished</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                </div>
-                <div className="form-row">
-                    <textarea
-                        name="project_remark"
-                        placeholder="Project Remarks"
-                        value={formData.project_remark}
-                        onChange={handleChange}
-                    ></textarea>
-                </div>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              required
+            >
+              <option value="unfinished">Unfinished</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+          <div className="form-row">
+            <textarea
+              name="project_remark"
+              placeholder="Project Remarks"
+              value={formData.project_remark}
+              onChange={handleChange}
+            ></textarea>
+          </div>
           <button type="submit">Submit</button>
         </form>
       </Modal>
-
-      
     </div>
   );
 };

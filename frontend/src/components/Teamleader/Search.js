@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/Search.css'; // Import the CSS for styling
+import '../../styles/Search.css'; // Corrected import path
 
 const Search = ({ projects }) => {
     const [tinNumber, setTinNumber] = useState(''); // State for TIN number

@@ -1,0 +1,69 @@
+.sidebar {
+    width: 220px;
+    /* Slightly wider for better usability */
+    background: linear-gradient(180deg, #e0f7fa, #b2ebf2);
+    /* Light gradient background */
+    padding: 20px;
+    /* Padding around the content */
+    border-right: 1px solid #ddd;
+    /* Right border for separation */
+    position: fixed;
+    /* Fixed position to stay on the left */
+    height: 100%;
+    /* Full height */
+    overflow-y: auto;
+    /* Scroll if content overflows */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
+    transition: width 0.3s;
+    /* Smooth transition for width */
+}
+
+.sidebar h2 {
+    font-size: 26px;
+    /* Increased font size for the heading */
+    margin-bottom: 20px;
+    /* Space below the heading */
+    color: #00796b;
+    /* Dark teal color for the heading */
+    text-align: center;
+    /* Center the heading */
+}
+
+.sidebar ul {
+    list-style-type: none;
+    /* Remove default list styling */
+    padding: 0;
+    /* Remove default padding */
+}
+
+.sidebar li {
+    margin: 20px 0;
+    /* Increased space between items */
+}
+
+.sidebar a {
+    text-decoration: none;
+    /* Remove underline from links */
+    color: #004d40;
+    /* Darker color for text */
+    font-size: 18px;
+    /* Font size for links */
+    padding: 12px;
+    /* Padding for clickable area */
+    border-radius: 5px;
+    /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    /* Smooth transition for background and color */
+    display: block;
+    /* Make the link fill the entire area */
+}
+
+.sidebar a:hover {
+    background-color: #00796b;
+    /* Change background on hover */
+    color: white;
+    /* Change text color on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Shadow effect on hover */
+}

@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { FaClipboardList, FaCheckCircle, FaExclamationCircle, FaTasks } from 'react-icons/fa'; // Import icons
+// import Sidebar from './Sidebar'; // Remove this line
+import Reports from './Reports'; // Import the Reports component
+
+import {
+    FaClipboardList,
+    FaCheckCircle,
+    FaExclamationCircle,
+    FaTasks
+} from 'react-icons/fa'; // Import icons
 
 const Dashboard = () => {
     const [projects, setProjects] = useState([]);
@@ -31,8 +39,9 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="dashboard">
+        <div style={{ padding: '20px', marginTop: '20px' }}> {/* Adjusted layout without Sidebar */}
             <h2>Dashboard</h2>
+            <Reports projects={projects} /> {/* Include the Reports component */}
             <div className="dashboard-content">
                 <div className="card" onClick={() => handleCardClick('total')}>
                     <FaClipboardList className="card-icon" />

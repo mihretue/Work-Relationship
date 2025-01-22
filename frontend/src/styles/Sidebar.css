@@ -1,0 +1,61 @@
+.sidebar {
+    width: 200px;
+    /* Set the width of the sidebar */
+    background-color: #ffffff;
+    /* White background for contrast */
+    padding: 20px;
+    /* Padding around the content */
+    border-right: 1px solid #ddd;
+    /* Right border for separation */
+    position: fixed;
+    /* Fixed position to stay on the left */
+    height: 100%;
+    /* Full height */
+    overflow-y: auto;
+    /* Scroll if content overflows */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for depth */
+}
+
+.sidebar h2 {
+    font-size: 24px;
+    /* Font size for the heading */
+    margin-bottom: 20px;
+    /* Space below the heading */
+    color: #007bff;
+    /* Blue color for the heading */
+}
+
+.sidebar ul {
+    list-style-type: none;
+    /* Remove default list styling */
+    padding: 0;
+    /* Remove default padding */
+}
+
+.sidebar li {
+    margin: 15px 0;
+    /* Space between items */
+}
+
+.sidebar a {
+    text-decoration: none;
+    /* Remove underline from links */
+    color: #333;
+    /* Text color */
+    font-size: 18px;
+    /* Font size for links */
+    padding: 10px;
+    /* Padding for clickable area */
+    border-radius: 5px;
+    /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s;
+    /* Smooth transition for background and color */
+}
+
+.sidebar a:hover {
+    background-color: #007bff;
+    /* Change background on hover */
+    color: white;
+    /* Change text color on hover */
+}
