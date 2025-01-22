@@ -7,10 +7,11 @@ import Dashboard from "./components/Teamleader/Dashboard";
 import NewProject from "./components/Teamleader/NewProject";
 import Search from "./components/Teamleader/Search";
 import Users from "./components/Admin/Users";
-import MyTasks from './components/Teamleader/MyTasks';
 import Chat from './components/Teamleader/Chat';
 import MyProfile from './components/Teamleader/MyProfile';
 import AdminLogin from "./components/Admin/AdminLogin";
+import Projects from "./components/Teamleader/Projects";
+import Reports from "./components/Teamleader/Reports";
 
 const App = () => {
     return (
@@ -23,9 +24,10 @@ const App = () => {
                     <Route path="/new-project" element={<NewProject />} />
                     <Route path="/search" element={<Search />} />
                     <Route path="/users" element={<Users />} />
-                    <Route path="/tasks" element={<MyTasks />} />
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/profile" element={<MyProfile />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/reports" element={<Reports />} />
                     <Route
                         path="/"
                         element={

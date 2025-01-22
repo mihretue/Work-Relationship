@@ -12,6 +12,7 @@ const Header = () => {
                 <Link to="/search" className="nav-item">Search</Link>
                 <Link to="/users" className="nav-item">Users</Link>
                 <Link to="/admin-login" className="nav-item">Admin Login</Link>
+                <Link to="/reports" className="nav-item">Reports</Link>
                 <button className="logout" style={{ backgroundColor: 'transparent', border: 'none', color: 'white', cursor: 'pointer' }}>Logout</button>
             </nav>
         </header>
