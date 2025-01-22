@@ -1,69 +1,86 @@
-.search {
-    padding: 30px;
+.search-container {
+    margin-top: 40px; /* Adjust positioning to be further below the dashboard */
+    padding: 20px;
     background-color: #f9f9f9;
-    /* Light background for contrast */
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    /* Limit the width for better appearance */
-    margin: auto;
-    /* Center the form */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .search h2 {
-    text-align: center;
     color: #333;
-    font-size: 28px;
-    /* Larger font size for the heading */
-    margin-bottom: 20px;
-    /* Space below the heading */
 }
 
 .search form {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    /* Space between form elements */
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.search input {
-    width: 100%;
-    padding: 15px;
-    /* Increased padding for better touch targets */
+.search input[type="text"] {
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    /* Smooth transition for border color and shadow */
+    border-radius: 5px;
     font-size: 16px;
-    /* Increased font size */
-}
-
-.search input:focus {
-    border-color: #007bff;
-    /* Change border color on focus */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-    /* Add shadow on focus */
-    outline: none;
-    /* Remove default outline */
+    width: 300px;
 }
 
 .search button {
+    padding: 10px 20px;
     background-color: #007bff;
-    /* Primary button color */
     color: white;
     border: none;
-    padding: 15px;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-    /* Smooth transition for background color and scale */
     font-size: 16px;
-    /* Increased font size for the button */
 }
 
 .search button:hover {
     background-color: #0056b3;
-    /* Darker blue on hover */
-    transform: scale(1.05);
-    /* Slightly enlarge button on hover */
+}
+
+.results {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.results h3 {
+    text-align: center;
+    color: #333;
+}
+
+.project-details {
+    margin: 20px auto;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.project-details table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.project-details th,
+.project-details td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.project-details th {
+    background-color: #f1f1f1;
+    font-weight: bold;
+}
+
+.no-results {
+    color: #d9534f;
+    text-align: center;
+    font-weight: bold;
 }

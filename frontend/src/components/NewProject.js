@@ -1,3 +1,4 @@
+
 import React, { useState,useEffect } from "react";
 import { Modal, Button} from "@mantine/core"; 
 import { MantineReactTable } from "mantine-react-table"; // Import Mantine React Table
@@ -31,6 +32,8 @@ const NewProject = () => {
   const [projects, setProjects] = useState([]); // State to manage project data for the table
   const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle the modal
   const [refetch, setRefetch] = useState(false);
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
