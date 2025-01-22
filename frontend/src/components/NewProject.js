@@ -59,6 +59,7 @@ const NewProject = ({ onProjectCreated }) => {
                         value={formData.tinNumber}
                         onChange={handleChange}
                         required
+                        type="number"
                     />
                     <input
                         name="companyName"
@@ -82,6 +83,7 @@ const NewProject = ({ onProjectCreated }) => {
                         value={formData.phoneNumber}
                         onChange={handleChange}
                         required
+                        type="number"
                     />
                 </div>
                 <div className="form-row">
