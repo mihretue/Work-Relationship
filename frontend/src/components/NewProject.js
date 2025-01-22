@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Modal, Button} from "@mantine/core"; 
 import { MantineReactTable } from "mantine-react-table"; // Import Mantine React Table
 import "../styles/NewProject.css"; // Import your custom CSS
-import { createProject } from "../service/api";
-
+import { createProject,getAllCompanies } from "../service/api";
+import { CustomizableMantineTable } from "../common/customeTable";
 const NewProject = () => {
   const [formData, setFormData] = useState({
     tin_number: "",
@@ -30,6 +30,7 @@ const NewProject = () => {
 
   const [projects, setProjects] = useState([]); // State to manage project data for the table
   const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle the modal
+  const [refetch, setRefetch] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,22 +108,117 @@ const NewProject = () => {
       console.error("Error creating project:", error);
     }
   };
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Fetch companies on component mount
+  const fetchCompanies = async () => {
+    setIsLoading(true);
+    try {
+      const companyData = await getAllCompanies(); 
+      console.log("Company DAta",companyData[1].projects)
+      setData(companyData); // Set the fetched data
+    } catch (error) {
+      console.error("Error loading companies:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchCompanies(); // Call the fetch function when the component mounts
+  }, []);
+  const getNestedValue = (obj, path) => {
+    return path.split('.').reduce((acc, key) => acc && acc[key], obj);
+  };
+  const handleView = (rowData) => {
+    console.log("Viewing data:", rowData);
+    // Add your view logic here, such as opening a modal with detailed info
+  };
+  
+  const handleDelete = (rowData) => {
+    console.log("Deleting data:", rowData);
+    // Add your delete logic here, such as making an API call to delete
+    setData((prevData) => prevData.filter((item) => item.id !== rowData.id));
+  };
+  
+  const handleForward = (rowData) => {
+    console.log("Forwarding data:", rowData);
+    // Add your forward logic here
+  };
+  
+  const handleEdit = (rowData) => {
+    console.log("Editing data:", rowData);
+    // Add your edit logic here, such as populating the form with row data
+    setFormData(rowData);
+    setIsModalOpen(true); // Open the modal for editing
+  };
+  
   // Table columns definition
-  const columns = [
-    { accessor: "tin_number", header: "TIN Number" },
-    { accessor: "manager_name", header: "Manager Name" },
-    { accessor: "company_name", header: "Company Name" },
-    { accessor: "projects[0].project_name", header: "Project Name" },
-    { accessor: "projects[0].year", header: "Year" },
-    { accessor: "projects[0].status", header: "Status" },
+  const companyCol = [
+    
+      { accessorKey: "tin_number", header: "TIN Number" },
+      { accessorKey: "manager_name", header: "Manager Name" },
+      { accessorKey: "company_name", header: "Company Name" },
+      {
+        header: "Actions",
+        accessorKey: "actions", 
+        Cell: ({ row }) => (
+          <div className="action-buttons">
+            <Button
+              size="xs"
+              color="blue"
+              onClick={() => handleView(row.original)}
+            >
+              View
+            </Button>
+            <Button
+              size="xs"
+              color="red"
+              onClick={() => handleDelete(row.original)}
+            >
+              Delete
+            </Button>
+            <Button
+              size="xs"
+              color="green"
+              onClick={() => handleForward(row.original)}
+            >
+              Forward
+            </Button>
+            <Button
+              size="xs"
+              color="yellow"
+              onClick={() => handleEdit(row.original)}
+            >
+              Edit
+            </Button>
+          </div>
+        ),
+      },
+    
   ];
-
+  
   return (
     <div className="new-project">
       {/* New Project Button */}
       <Button size={16}  onClick={() => setIsModalOpen(true)}>New Project</Button>
-
+      {/* <CustomizableMantineTable
+          endPoint="companies/"
+          columns={companyCol}
+          refetch={refetch}
+          setRefetch={setRefetch}
+          // finalData={[{ tin_number: "1234", manager_name: "John Doe" }]}
+        /> */}
+        <MantineReactTable
+          columns={companyCol}
+          data={data}
+          state={{
+            isLoading, // Show loading state
+          }}
+          enableSorting
+          enablePagination
+          enableGlobalFilter
+    />
       {/* Modal for the Form */}
       <Modal
         opened={isModalOpen}
@@ -267,8 +363,7 @@ const NewProject = () => {
         </form>
       </Modal>
 
-      {/* Table for Projects */}
-      <MantineReactTable columns={columns} data={projects} />
+      
     </div>
   );
 };

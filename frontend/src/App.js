@@ -6,7 +6,7 @@ import DataEntryForm from './components/DataEntryForm';
 import Dashboard from './components/Dashboard';
 import NewProject from './components/NewProject';
 import Search from './components/Search';
-import Users from './components/Users';
+import Users from './components/Admin/Users';
 
 const App = () => {
     return (
