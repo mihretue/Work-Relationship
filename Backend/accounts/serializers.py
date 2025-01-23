@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import User
 from django.contrib.auth import authenticate
-
+import logging
+logger = logging.getLogger(__name__)
 # class UserSignupSerializer(serializers.ModelSerializer):
 #     password = serializers.CharField(write_only=True)
 
@@ -41,23 +42,23 @@ class UserSignupSerializer(serializers.ModelSerializer):
             role=validated_data.get('role')
         )
         
-class UserLoginSerializer(serializers.Serializer):
+class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
         username = data.get("username")
         password = data.get("password")
+        logger.info(f"Attempting authentication for username: {username}")
 
-        # Authenticate the user
         user = authenticate(username=username, password=password)
         if not user:
-            raise serializers.ValidationError({"non_field_errors": ["Invalid username or password"]})
+            logger.error(f"Authentication failed for username: {username}")
+            raise serializers.ValidationError({"non_field_errors": "Invalid username or password"})
 
-        # Ensure the user is active
         if not user.is_active:
-            raise serializers.ValidationError({"non_field_errors": ["This account is deactivated."]})
+            logger.error(f"User {username} is inactive.")
+            raise serializers.ValidationError({"non_field_errors": "User account is inactive."})
 
-        # Pass the authenticated user to the validated data
         data['user'] = user
         return data

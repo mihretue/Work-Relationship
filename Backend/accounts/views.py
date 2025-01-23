@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSignupSerializer, UserLoginSerializer
+from .serializers import UserSignupSerializer, LoginSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdmin, IsTeamLeader, IsDirector
@@ -17,19 +17,23 @@ class UserSignupView(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserLoginView(APIView):
+class LoginView(APIView):
     def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
+        serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
+
+            # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
+            access_token = refresh.access_token
+
             return Response({
-                "access_token": str(refresh.access_token),
+                "access_token": str(access_token),
                 "refresh_token": str(refresh),
-                "role": user.role,
+                "username": user.username,
             }, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 class AdminDashboardView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
 
