@@ -27,7 +27,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'role']
+        fields = ['username', 'password', 'role']
 
     def validate_role(self, value):
         if value not in dict(User.ROLE_CHOICES):
@@ -37,7 +37,6 @@ class UserSignupSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(
             username=validated_data.get('username'),
-            email=validated_data.get('email'),
             password=validated_data['password'],
             role=validated_data.get('role')
         )
@@ -47,9 +46,18 @@ class UserLoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        user = authenticate(username=data['username'], password=data['password'])
-        if user is None:
-            raise serializers.ValidationError("Invalid username or password")
+        username = data.get("username")
+        password = data.get("password")
+
+        # Authenticate the user
+        user = authenticate(username=username, password=password)
+        if not user:
+            raise serializers.ValidationError({"non_field_errors": ["Invalid username or password"]})
+
+        # Ensure the user is active
         if not user.is_active:
-            raise serializers.ValidationError("User account is deactivated")
-        return user
+            raise serializers.ValidationError({"non_field_errors": ["This account is deactivated."]})
+
+        # Pass the authenticated user to the validated data
+        data['user'] = user
+        return data

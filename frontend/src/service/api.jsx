@@ -55,3 +55,9 @@ export const createUser = (body)=>{
     res.json()
   })
 }
+
+export const loginUser = (body)=>{
+  return fetch(`${API_URL}login/`,postHeader(body)).then((res)=>{
+    res.json()
+  })
+}
