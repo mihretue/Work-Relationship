@@ -1,5 +1,5 @@
 import { getApiUrl } from "../utils/getApi";
-
+import axios from "axios";
 const API_URL = getApiUrl()
 
 const postHeader = (body)=>{
@@ -21,13 +21,19 @@ const postHeader = (body)=>{
 //     };
 // };
 // Example getHeader function
-export const getHeader = () => ({
+export const getHeader = () => { 
+  const accessToken = localStorage.getItem('accessToken');
+  if (!accessToken) {
+    console.error("Access token is missing");
+    throw new Error("Access token is missing. Please log in.");
+  }
+  return { 
     method: "GET", // or POST/PUT/DELETE depending on your use case
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`, // Add token if required
+       "Authorization": `Bearer ${accessToken}`
     },
-  });
+  }};
   
 
 export const createProject = (body)=>{
@@ -56,8 +62,28 @@ export const createUser = (body)=>{
   })
 }
 
-export const loginUser = (body)=>{
-  return fetch(`${API_URL}login/`,postHeader(body)).then((res)=>{
-    res.json()
-  })
-}
+
+export const login = async (username, password) => {
+  try {
+      const url = 'http://127.0.0.1:8000/api/login/';
+      console.log("Making request to:", url); // Log the URL being used
+
+      const response = await axios.post("/api/login/", {
+          username,
+          password,
+      });
+
+      console.log("Response received:", response.data);
+
+      if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+      } else {
+          console.error("No token found in the response");
+      }
+
+      return response.data;
+  } catch (error) {
+      console.error("Login error:", error.response ? error.response.data : error.message);
+      throw error; 
+  }
+};

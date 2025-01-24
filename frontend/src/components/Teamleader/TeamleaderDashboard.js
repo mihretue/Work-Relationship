@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 // import Sidebar from './Sidebar'; // Remove this line
 import Reports from './Reports'; // Import the Reports component
-
+import { Link } from 'react-router-dom';
 import {
     FaClipboardList,
     FaCheckCircle,
@@ -41,7 +41,11 @@ const Dashboard = () => {
     return (
         <div style={{ padding: '20px', marginTop: '20px' }}> {/* Adjusted layout without Sidebar */}
             <h2>Dashboard</h2>
-            <Reports projects={projects} /> {/* Include the Reports component */}
+            <Reports projects={projects} /> 
+            <div className="navigation">
+                    <Link to="/teamleader/projects" style={{ marginRight: '20px' }}>Projects</Link>
+                    <Link to="/teamleader/reports" style={{ marginRight: '20px' }}>Reports</Link>
+                </div>
             <div className="dashboard-content">
                 <div className="card" onClick={() => handleCardClick('total')}>
                     <FaClipboardList className="card-icon" />
