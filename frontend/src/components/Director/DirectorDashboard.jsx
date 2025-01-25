@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-import Reports from './Reports'; // Import the Reports component
+import Reports from '../Reports'; // Adjusted import path to point to the correct location
+import DirectorHeader from './DirectorHeader'; // Import the DirectorHeader component
 
 import {
     FaClipboardList,
@@ -9,7 +10,7 @@ import {
     FaTasks
 } from 'react-icons/fa'; // Import icons
 
-const Dashboard = () => {
+const DirectorDashboard = () => {
     const [projects, setProjects] = useState([]);
     const [showDetails, setShowDetails] = useState(null); // State to control visibility of project details
 
@@ -39,16 +40,8 @@ const Dashboard = () => {
     };
 
     return (
-        <div style={{ padding: '20px', marginTop: '20px' }}> {/* Adjusted layout without Sidebar */}
-            {/* Header with navigation links */}
-            <div className="header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h2>Dashboard</h2>
-                <div className="navigation">
-                    <Link to="/admin/projects" style={{ marginRight: '20px' }}>Projects</Link>
-                    <Link to="/admin/reports" style={{ marginRight: '20px' }}>Reports</Link>
-                </div>
-            </div>
-
+        <div style={{ padding: '20px', marginTop: '20px' }}>
+            <DirectorHeader /> {/* Include the DirectorHeader component */}
             <Reports projects={projects} /> {/* Include the Reports component */}
             <div className="dashboard-content">
                 <div className="card" onClick={() => handleCardClick('total')}>
@@ -139,4 +132,4 @@ const tableCellStyle = {
     textAlign: 'left',
 };
 
-export default Dashboard;
+export default DirectorDashboard;

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button } from "@mantine/core";
-import { MantineReactTable } from "mantine-react-table";
-import "../../styles/NewProject.css";
-
-const DirectorNewProject = () => {
+import { MantineReactTable } from "mantine-react-table"; // Import Mantine React Table
+import "../../styles/NewProject.css"; // Corrected import path
+import { createProject, getAllCompanies } from "../../service/api";
+import { CustomizableMantineTable } from "../../common/customeTable";
+const NewProject = () => {
     const [formData, setFormData] = useState({
         tin_number: "",
         manager_name: "",
@@ -27,15 +28,9 @@ const DirectorNewProject = () => {
         ],
     });
 
-    const [projects, setProjects] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    useEffect(() => {
-        const storedProjects = JSON.parse(localStorage.getItem("projects"));
-        if (storedProjects) {
-            setProjects(storedProjects);
-        }
-    }, []);
+    const [projects, setProjects] = useState([]); // State to manage project data for the table
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle the modal
+    const [refetch, setRefetch] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -61,62 +56,104 @@ const DirectorNewProject = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const newProject = {
-            ...formData,
-            projects: [
-                {
-                    ...formData.projects[0],
-                    year: parseInt(formData.projects[0].year, 10),
-                },
-            ],
-            id: projects.length + 1,
-        };
+        try {
+            const updatedFormData = {
+                ...formData,
+                projects: [
+                    {
+                        ...formData.projects[0],
+                        year: parseInt(formData.projects[0].year, 10), // Convert year to an integer
+                    },
+                ],
+            };
 
-        const updatedProjects = [...projects, newProject];
-        setProjects(updatedProjects);
-        localStorage.setItem("projects", JSON.stringify(updatedProjects));
-        setIsModalOpen(false);
-        resetForm();
+            const response = await createProject(updatedFormData);
+            console.log("Response from API:", response);
+
+            // Update the project list for the table
+            setProjects((prevProjects) => [
+                ...prevProjects,
+                { ...updatedFormData, id: projects.length + 1 },
+            ]);
+
+            // Close the modal
+            setIsModalOpen(false);
+
+            // Reset the form
+            setFormData({
+                tin_number: "",
+                manager_name: "",
+                company_name: "",
+                phone_number: "",
+                company_type: "",
+                grade: "",
+                organization: "",
+                performance: "",
+                remark: "",
+                approved: false,
+                projects: [
+                    {
+                        project_name: "",
+                        project_cost: "",
+                        year: "",
+                        categories: "",
+                        status: "unfinished",
+                        project_remark: "",
+                    },
+                ],
+            });
+        } catch (error) {
+            console.error("Error creating project:", error);
+        }
+    };
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Fetch companies on component mount
+    const fetchCompanies = async () => {
+        setIsLoading(true);
+        try {
+            const companyData = await getAllCompanies();
+            console.log("Company DAta", companyData[1].projects);
+            setData(companyData); // Set the fetched data
+        } catch (error) {
+            console.error("Error loading companies:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    useEffect(() => {
+        fetchCompanies(); // Call the fetch function when the component mounts
+    }, []);
+    const getNestedValue = (obj, path) => {
+        return path.split(".").reduce((acc, key) => acc && acc[key], obj);
+    };
+    const handleView = (rowData) => {
+        console.log("Viewing data:", rowData);
+        // Add your view logic here, such as opening a modal with detailed info
     };
 
-    const resetForm = () => {
-        setFormData({
-            tin_number: "",
-            manager_name: "",
-            company_name: "",
-            phone_number: "",
-            company_type: "",
-            grade: "",
-            organization: "",
-            performance: "",
-            remark: "",
-            approved: false,
-            projects: [
-                {
-                    project_name: "",
-                    project_cost: "",
-                    year: "",
-                    categories: "",
-                    status: "unfinished",
-                    project_remark: "",
-                },
-            ],
-        });
+    const handleDelete = (rowData) => {
+        console.log("Deleting data:", rowData);
+        // Add your delete logic here, such as making an API call to delete
+        setData((prevData) => prevData.filter((item) => item.id !== rowData.id));
     };
 
-    const handleDelete = (id) => {
-        const updatedProjects = projects.filter((project) => project.id !== id);
-        setProjects(updatedProjects);
-        localStorage.setItem("projects", JSON.stringify(updatedProjects));
+    const handleForward = (rowData) => {
+        console.log("Forwarding data:", rowData);
+        // Add your forward logic here
     };
 
-    const handleEdit = (project) => {
-        setFormData(project);
-        setIsModalOpen(true);
+    const handleEdit = (rowData) => {
+        console.log("Editing data:", rowData);
+        // Add your edit logic here, such as populating the form with row data
+        setFormData(rowData);
+        setIsModalOpen(true); // Open the modal for editing
     };
 
+    // Table columns definition
     const companyCol = [
         { accessorKey: "tin_number", header: "TIN Number" },
         { accessorKey: "manager_name", header: "Manager Name" },
@@ -128,17 +165,31 @@ const DirectorNewProject = () => {
                 <div className="action-buttons">
                     <Button
                         size="xs"
-                        color="yellow"
-                        onClick={() => handleEdit(row.original)}
+                        color="blue"
+                        onClick={() => handleView(row.original)}
                     >
-                        Edit
+                        View
                     </Button>
                     <Button
                         size="xs"
                         color="red"
-                        onClick={() => handleDelete(row.original.id)}
+                        onClick={() => handleDelete(row.original)}
                     >
                         Delete
+                    </Button>
+                    <Button
+                        size="xs"
+                        color="green"
+                        onClick={() => handleForward(row.original)}
+                    >
+                        Forward
+                    </Button>
+                    <Button
+                        size="xs"
+                        color="yellow"
+                        onClick={() => handleEdit(row.original)}
+                    >
+                        Edit
                     </Button>
                 </div>
             ),
@@ -147,19 +198,28 @@ const DirectorNewProject = () => {
 
     return (
         <div className="new-project">
+            {/* New Project Button */}
             <Button size={16} onClick={() => setIsModalOpen(true)}>
                 New Project
             </Button>
+            {/* <CustomizableMantineTable
+          endPoint="companies/"
+          columns={companyCol}
+          refetch={refetch}
+          setRefetch={setRefetch}
+          // finalData={[{ tin_number: "1234", manager_name: "John Doe" }]}
+        /> */}
             <MantineReactTable
                 columns={companyCol}
-                data={projects}
+                data={data}
                 state={{
-                    isLoading: false,
+                    isLoading, // Show loading state
                 }}
                 enableSorting
                 enablePagination
                 enableGlobalFilter
             />
+            {/* Modal for the Form */}
             <Modal
                 opened={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -285,7 +345,7 @@ const DirectorNewProject = () => {
                     <div className="form-row">
                         <select
                             name="status"
-                            value={formData.projects[0].status}
+                            value={formData.status}
                             onChange={handleChange}
                             required
                         >
@@ -297,7 +357,7 @@ const DirectorNewProject = () => {
                         <textarea
                             name="project_remark"
                             placeholder="Project Remarks"
-                            value={formData.projects[0].project_remark}
+                            value={formData.project_remark}
                             onChange={handleChange}
                         ></textarea>
                     </div>
@@ -308,4 +368,4 @@ const DirectorNewProject = () => {
     );
 };
 
-export default DirectorNewProject;
+export default NewProject;

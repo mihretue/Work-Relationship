@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 // import Sidebar from './Sidebar'; // Remove this line
-
+import { jsPDF } from 'jspdf'; // Import jsPDF
 
 import {
     FaClipboardList,
@@ -38,9 +38,23 @@ const Dashboard = () => {
         return projects.filter((project) => project.status === status);
     };
 
+    // Function to export reports as PDF
+    const exportPDF = () => {
+        const doc = new jsPDF();
+        doc.text("Admin Dashboard Report", 20, 20);
+        doc.text("Projects:", 20, 30);
+
+        projects.forEach((project, index) => {
+            doc.text(`${index + 1}. ${project.projectName} - ${project.status}`, 20, 40 + (index * 10));
+        });
+
+        doc.save("admin_dashboard_report.pdf");
+    };
+
     return (
         <div style={{ padding: '20px', marginTop: '20px' }}> {/* Adjusted layout without Sidebar */}
             <h2>Dashboard</h2>
+            <button onClick={exportPDF} style={{ marginBottom: '20px' }}>Export Report as PDF</button>
             {/* <Reports projects={projects} />  */}
             <div className="dashboard-content">
                 <div className="card" onClick={() => handleCardClick('total')}>

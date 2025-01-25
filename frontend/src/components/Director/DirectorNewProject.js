@@ -216,8 +216,8 @@ const DirectorNewProject = () => {
                             required
                         >
                             <option value="">Select Grade</option>
-                            <option value="A">Grade A</option>
-                            <option value="B">Grade B</option>
+                            <option value="1">Grade A</option>
+                            <option value="2">Grade B</option>
                         </select>
                     </div>
                     <div className="form-row">
