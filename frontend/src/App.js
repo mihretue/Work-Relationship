@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import EmployeeDashboard from "./components/Teamleader/TeamleaderDashboard";
+
 import DirectorDashboard from "./components/Director/DirectorDashboard";
 import DirectorNewProject from "./components/Director/DirectorNewProject";
 import DirectorSearch from "./components/Director/Search";
@@ -15,10 +16,12 @@ import Users from './components/Admin/Users';
 import AdminNewProject from './components/Admin/AdminNewProject';
 import Reports from './components/Director/Reports'; // Ensure this path is correct
 
+
 const App = () => {
   return (
     <Router>
       <Routes>
+
         <Route path="/" element={<LoginPage />} />
         <Route path="/admin/*" element={
           <>
@@ -52,6 +55,7 @@ const App = () => {
             </Routes>
           </>
         } />
+
       </Routes>
     </Router>
   );

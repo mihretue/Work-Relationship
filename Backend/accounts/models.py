@@ -5,7 +5,7 @@ class UserManager(BaseUserManager):
     def create_user(self, username, password=None, role='team_leader', **extra_fields):
         if not username:
             raise ValueError("The Username field is required")
-        user = self.model(username=username, role=role, **extra_fields)
+        user = self.model(username=username, role=role,is_staff=True, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -17,21 +17,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    # ROLE_CHOICES = [
-    #     ('admin', 'Admin'),
-    #     ('team_leader', 'Team Leader'),
-    #     ('director', 'Director'),
-    # ]
     
-    # username = models.CharField(max_length=150, unique=True)
-    # role = models.CharField(max_length=50, choices=ROLE_CHOICES, default='team_leader')
-    # is_active = models.BooleanField(default=True)
-    # is_staff = models.BooleanField(default=False)
-
-    # objects = UserManager()
-
-    # USERNAME_FIELD = 'username'
-    # REQUIRED_FIELDS = []
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='accounts_user_set',  # Change related_name here
@@ -45,8 +31,10 @@ class User(AbstractUser):
     ROLE_CHOICES = [
         ('director', 'Director'),
         ('team_leader', 'Team Leader'),
+        ('admin',"Admin")
     ]
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
-
+    role = models.CharField(max_length=20,default="team_leader", choices=ROLE_CHOICES)
+    objects = UserManager()
+    
     def __str__(self):
         return f"{self.username} ({self.role})"
