@@ -3,10 +3,12 @@ import axios from "axios";
 const API_URL = getApiUrl()
 
 const postHeader = (body)=>{
+  const accessToken = localStorage.getItem("accessToken")
     return {
         method: 'POST',
         headers:{
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`
         },
         body: JSON.stringify(body)
 }
@@ -31,7 +33,7 @@ export const getHeader = () => {
     method: "GET", // or POST/PUT/DELETE depending on your use case
     headers: {
       "Content-Type": "application/json",
-       "Authorization": `Bearer ${accessToken}`
+      "Authorization": `Bearer ${accessToken}`
     },
   }};
   

@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from 'react';
 // import Sidebar from './Sidebar'; // Remove this line
 import Reports from './Reports'; // Import the Reports component
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     FaClipboardList,
     FaCheckCircle,
     FaExclamationCircle,
     FaTasks
 } from 'react-icons/fa'; // Import icons
+// import { useNavigate } from 'react-router-dom';
+
 
 const Dashboard = () => {
+    const navigate = useNavigate()
     const [projects, setProjects] = useState([]);
     const [showDetails, setShowDetails] = useState(null); // State to control visibility of project details
+    
+    
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("role");
+        navigate("/login");
+    };
 
     useEffect(() => {
         // Fetch data from an API or local storage
@@ -23,6 +34,11 @@ const Dashboard = () => {
             } catch (error) {
                 console.error("Error fetching data:", error); // Error handling
             }
+            const expiresAt = localStorage.getItem("expiresAt");
+
+            if (expiresAt && new Date().getTime() > expiresAt) {
+            handleLogout();
+    }
         };
 
         fetchData();
