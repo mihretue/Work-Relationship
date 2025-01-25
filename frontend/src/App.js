@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import LoginPage from "./components/LoginPage";
+import LoginPage from "./components/LoginForm";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 import EmployeeDashboard from "./components/Teamleader/TeamleaderDashboard";
 
