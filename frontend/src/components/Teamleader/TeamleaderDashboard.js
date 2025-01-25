@@ -55,13 +55,13 @@ const Dashboard = () => {
     };
 
     return (
-        <div style={{ padding: '20px', marginTop: '20px' }}> {/* Adjusted layout without Sidebar */}
+        <div style={{ padding: '20px', marginTop: '20px' }}> 
             <h2>Dashboard</h2>
             <Reports projects={projects} /> 
-            <div className="navigation">
+            {/* <div className="navigation">
                     <Link to="/teamleader/projects" style={{ marginRight: '20px' }}>Projects</Link>
                     <Link to="/teamleader/reports" style={{ marginRight: '20px' }}>Reports</Link>
-                </div>
+                </div> */}
             <div className="dashboard-content">
                 <div className="card" onClick={() => handleCardClick('total')}>
                     <FaClipboardList className="card-icon" />
