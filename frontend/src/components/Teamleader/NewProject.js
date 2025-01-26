@@ -15,7 +15,7 @@ const NewProject = () => {
     grade: "",
     organization: "",
     performance: "",
-    remark: "",
+    
     approved: false,
     projects: [
       {
@@ -92,7 +92,7 @@ const NewProject = () => {
         grade: "",
         organization: "",
         performance: "",
-        remark: "",
+      
         approved: false,
         projects: [
           {
@@ -129,6 +129,7 @@ const NewProject = () => {
   useEffect(() => {
     fetchCompanies(); // Call the fetch function when the component mounts
   }, []);
+  
   const getNestedValue = (obj, path) => {
     return path.split('.').reduce((acc, key) => acc && acc[key], obj);
   };
@@ -178,7 +179,9 @@ const NewProject = () => {
       {
         header: "Actions",
         accessorKey: "actions", 
-        Cell: ({ row }) => (
+        Cell: ({ row }) => {
+          const {forwarded_to_director}= row.original;
+          return (
           <div className="action-buttons">
             <Button
               size="xs"
@@ -187,7 +190,8 @@ const NewProject = () => {
             >
               View
             </Button>
-            <Button
+            {!forwarded_to_director &&
+              (<><Button
               size="xs"
               color="red"
               onClick={() => handleDelete(row.original)}
@@ -201,6 +205,8 @@ const NewProject = () => {
             >
               Forward
             </Button>
+            </>
+            )}
             <Button
               size="xs"
               color="yellow"
@@ -209,7 +215,8 @@ const NewProject = () => {
               Edit
             </Button>
           </div>
-        ),
+          )
+        },
       },
     
   ];
@@ -240,6 +247,7 @@ const NewProject = () => {
         opened={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Create New Project"
+        size={120}
       >
         <form onSubmit={handleSubmit}>
           <div className="form-row">
@@ -318,12 +326,7 @@ const NewProject = () => {
                         <option value="Excellent performance in AI development and software solutions.">Excellent performance in AI development and software solutions.</option>
                     </select>
                 </div>
-                <textarea
-                    name="remark"
-                    placeholder="Additional Remarks"
-                    value={formData.remark}
-                    onChange={handleChange}
-                ></textarea>
+                
           <div className="form-row">
             <input
               name="project_name"

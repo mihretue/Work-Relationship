@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../../styles/Search.css'; // Corrected import path
-
+import { SearchByTin } from '../../service/api';
 const Search = () => {
     const [tinNumber, setTinNumber] = useState(''); // State for TIN number
     const [filteredProjects, setFilteredProjects] = useState([]); // State for search results
@@ -17,11 +17,23 @@ const Search = () => {
         setTinNumber(e.target.value); // Update TIN number state
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Filter projects with the matching TIN number
-        const matches = projects.filter(project => project.tin_number === tinNumber);
-        setFilteredProjects(matches); // Update state with matching results
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        try {
+            const result = await SearchByTin(tinNumber);
+            console.log("results",result)
+            if (result && result.length > 0) {
+              setFilteredProjects(result);
+              console.log("filtered projects",filteredProjects)
+            } else {
+              console.warn("No matching records found.");
+              setFilteredProjects([]);
+            }
+          } catch (error) {
+            console.error("Error during search:", error);
+            alert("An error occurred while searching. Please try again.");
+          }
     };
 
     return (
@@ -61,7 +73,7 @@ const Search = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredProjects.map(project => (
+                                {filteredProjects.map((project) => (
                                     <tr key={project.id}>
                                         <td>{project.tin_number}</td>
                                         <td>{project.manager_name}</td>

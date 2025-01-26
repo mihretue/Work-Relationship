@@ -2,9 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button } from "@mantine/core";
 import { MantineReactTable } from "mantine-react-table";
 import "../../styles/NewProject.css";
-import { Navigate } from "react-router-dom";
-
+import { Navigate, useNavigate } from "react-router-dom";
+import { getAllCompanies,createProject,forwardToDirector } from "../../service/api";
+import { FaCreativeCommonsNcJp } from "react-icons/fa";
 const DirectorNewProject = () => {
+    const [data, setData] = useState([]);
+    const [refetch, setRefetch] = useState(false);
+    
+    const [isLoading, setIsLoading] = useState(false);
+
     const [formData, setFormData] = useState({
         tin_number: "",
         manager_name: "",
@@ -14,7 +20,7 @@ const DirectorNewProject = () => {
         grade: "",
         organization: "",
         performance: "",
-        remark: "",
+        
         approved: false,
         projects: [
             {
@@ -31,12 +37,7 @@ const DirectorNewProject = () => {
     const [projects, setProjects] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    useEffect(() => {
-        const storedProjects = JSON.parse(localStorage.getItem("projects"));
-        if (storedProjects) {
-            setProjects(storedProjects);
-        }
-    }, []);
+    
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -62,25 +63,71 @@ const DirectorNewProject = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const newProject = {
+        try {
+          const updatedFormData = {
             ...formData,
             projects: [
-                {
-                    ...formData.projects[0],
-                    year: parseInt(formData.projects[0].year, 10),
-                },
+              {
+                ...formData.projects[0],
+                year: parseInt(formData.projects[0].year, 10), // Convert year to an integer
+              },
             ],
-            id: projects.length + 1,
-        };
+          };
+    
+          const response = await createProject(updatedFormData);
+          console.log("Response from API:", response);
+    
+          // Update the project list for the table
+          setProjects((prevProjects) => [
+            ...prevProjects,
+            { ...updatedFormData, id: projects.length + 1 },
+          ]);
+    
+          // Close the modal
+          setIsModalOpen(false);
+    
+          // Reset the form
+          setFormData({
+            tin_number: "",
+            manager_name: "",
+            company_name: "",
+            phone_number: "",
+            company_type: "",
+            grade: "",
+            organization: "",
+            performance: "",
+            
+            approved: false,
+            projects: [
+              {
+                project_name: "",
+                project_cost: "",
+                year: "",
+                categories: "",
+                status: "unfinished",
+                project_remark: "",
+              },
+            ],
+          });
+        } catch (error) {
+          console.error("Error creating project:", error);
+        }
+      };
 
-        const updatedProjects = [...projects, newProject];
-        setProjects(updatedProjects);
-        localStorage.setItem("projects", JSON.stringify(updatedProjects));
-        setIsModalOpen(false);
-        resetForm();
-    };
+      const fetchCompanies = async () => {
+        setIsLoading(true);
+        try {
+          const companyData = await getAllCompanies(); 
+          console.log("Company DAta",companyData[1].projects)
+          setData(companyData); // Set the fetched data
+        } catch (error) {
+          console.error("Error loading companies:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
     const resetForm = () => {
         setFormData({
@@ -92,7 +139,7 @@ const DirectorNewProject = () => {
             grade: "",
             organization: "",
             performance: "",
-            remark: "",
+            
             approved: false,
             projects: [
                 {
@@ -117,35 +164,84 @@ const DirectorNewProject = () => {
         setFormData(project);
         setIsModalOpen(true);
     };
+    
+    const handleView=()=>{
+        console.log("view")
+    }
+
+    const handleForward = (rowData) => {
+        const { id } = rowData; // Extract the ID of the item to be forwarded
+    
+        forwardToDirector(
+        id, 
+        (data) => {
+            alert("Project forwarded successfully!");
+            console.log("Response Data:", data);
+            setRefetch((prev) => !prev);
+        },
+        (error) => {
+          // Error callback
+          console.error("Error forwarding project:", error);
+          alert(error.message ||"Failed to forward project. Please try again.");
+        }
+      );
+      };
+    useEffect(() => {
+        fetchCompanies()
+    }, []);
+
 
     const companyCol = [
-        { accessorKey: "tin_number", header: "TIN Number" },
-        { accessorKey: "manager_name", header: "Manager Name" },
-        { accessorKey: "company_name", header: "Company Name" },
-        {
+        
+          { accessorKey: "tin_number", header: "TIN Number" },
+          { accessorKey: "manager_name", header: "Manager Name" },
+          { accessorKey: "company_name", header: "Company Name" },
+          {
             header: "Actions",
-            accessorKey: "actions",
-            Cell: ({ row }) => (
-                <div className="action-buttons">
-                    <Button
-                        size="xs"
-                        color="yellow"
-                        onClick={() => handleEdit(row.original)}
-                    >
-                        Edit
-                    </Button>
-                    <Button
-                        size="xs"
-                        color="red"
-                        onClick={() => handleDelete(row.original.id)}
-                    >
-                        Delete
-                    </Button>
-                </div>
-            ),
-        },
-    ];
-    const navigate = Navigate()
+            accessorKey: "actions", 
+            Cell: ({ row }) => {
+              const {forwarded_to_director}= row.original;
+              return (
+              <div className="action-buttons">
+                <Button
+                  size="xs"
+                  color="blue"
+                  onClick={() => handleView(row.original)}
+                >
+                  View
+                </Button>
+                {!forwarded_to_director &&
+                  (<><Button
+                  size="xs"
+                  color="red"
+                  onClick={() => handleDelete(row.original)}
+                >
+                  Delete
+                </Button>
+                <Button
+                  size="xs"
+                  color="green"
+                  onClick={() => handleForward(row.original)}
+                >
+                  Forward
+                </Button>
+                </>
+                )}
+                <Button
+                  size="xs"
+                  color="yellow"
+                  onClick={() => handleEdit(row.original)}
+                >
+                  Edit
+                </Button>
+              </div>
+              )
+            },
+          },
+        
+      ];
+      
+    const navigate = useNavigate()
 const handleNavigation =()=>{
     navigate('/director/new-projects/approve-projects')
 }
@@ -154,12 +250,12 @@ const handleNavigation =()=>{
             <Button size={16} onClick={() => setIsModalOpen(true)}>
                 New Project
             </Button>
-            <Button size={16} onClick={handleNavigation()}>
+            <Button size={16} style={{marginLeft:'2rem',padding:'0.6rem', marginBottom:'3rem'}} onClick={handleNavigation}>
                 Approve Projects
             </Button>
             <MantineReactTable
                 columns={companyCol}
-                data={projects}
+                data={data}
                 state={{
                     isLoading: false,
                 }}
@@ -167,12 +263,20 @@ const handleNavigation =()=>{
                 enablePagination
                 enableGlobalFilter
             />
+            <div style={{marginTop:'2rem'}}>
             <Modal
                 opened={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 title="Create New Project"
+                size={890}
+                styles={{
+                    content: {
+                        margin: '20px auto',
+                        marginTop: '60px'
+                    },
+                }}
             >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} style={{marginTop:'6rem'}}>
                     <div className="form-row">
                         <input
                             name="tin_number"
@@ -249,12 +353,12 @@ const handleNavigation =()=>{
                             </option>
                         </select>
                     </div>
-                    <textarea
+                    {/* <textarea
                         name="remark"
                         placeholder="Additional Remarks"
                         value={formData.remark}
                         onChange={handleChange}
-                    ></textarea>
+                    ></textarea> */}
                     <div className="form-row">
                         <input
                             name="project_name"
@@ -311,6 +415,7 @@ const handleNavigation =()=>{
                     <button type="submit">Submit</button>
                 </form>
             </Modal>
+            </div>
         </div>
     );
 };
