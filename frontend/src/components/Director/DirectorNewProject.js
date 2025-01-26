@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button } from "@mantine/core";
 import { MantineReactTable } from "mantine-react-table";
 import "../../styles/NewProject.css";
+import { Navigate } from "react-router-dom";
 
 const DirectorNewProject = () => {
     const [formData, setFormData] = useState({
@@ -144,11 +145,17 @@ const DirectorNewProject = () => {
             ),
         },
     ];
-
+    const navigate = Navigate()
+const handleNavigation =()=>{
+    navigate('/director/new-projects/approve-projects')
+}
     return (
         <div className="new-project">
             <Button size={16} onClick={() => setIsModalOpen(true)}>
                 New Project
+            </Button>
+            <Button size={16} onClick={handleNavigation()}>
+                Approve Projects
             </Button>
             <MantineReactTable
                 columns={companyCol}

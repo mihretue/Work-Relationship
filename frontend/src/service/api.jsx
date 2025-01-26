@@ -1,10 +1,16 @@
 import { getApiUrl } from "../utils/getApi";
 import axios from "axios";
 const API_URL = getApiUrl()
+// import { Navigate } from "react-router-dom";
 
+
+// const navigate = Navigate()
 const postHeader = (body)=>{
   const accessToken = localStorage.getItem("accessToken")
-    return {
+//   if (!accessToken) {
+//     throw new Error('No access token found');
+// }
+  return {
         method: 'POST',
         headers:{
             "Content-Type": "application/json",
@@ -14,15 +20,27 @@ const postHeader = (body)=>{
 }
 }
 
-// const getHeader = () => {
-//     return {
-//         method: 'GET',
-//         headers: {
-//             "Content-Type": "application/json",
-//         }
-//     };
-// };
-// Example getHeader function
+const refreshAccessToken = async () => {
+  const refreshToken = localStorage.getItem("refreshToken");
+  const response = await fetch(`${API_URL}token/refresh/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ refresh: refreshToken }),
+  });
+  
+  if (response.ok) {
+    const data = await response.json();
+    localStorage.setItem('accessToken', data.access);
+    return data.access;
+  } else {
+    // Handle token refresh failure (e.g., log the user out)
+    console.log('Failed to refresh token');
+    return null;
+  }
+};
+
 export const getHeader = () => { 
   const accessToken = localStorage.getItem('accessToken');
   if (!accessToken) {
@@ -37,20 +55,68 @@ export const getHeader = () => {
     },
   }};
   
+  const makeApiRequest = async (url, body) => {
+    let accessToken = localStorage.getItem('accessToken');
+  
+    // Make the initial request
+    let response = await fetch(url, postHeader(body));
+  
+    if (response.status === 401) {
+      // Token is expired, refresh it
+      accessToken = await refreshAccessToken();
+  
+      if (accessToken) {
+        // Retry the original request with the new access token
+        response = await fetch(url, postHeader(body));
+      } else {
+        // Handle logout or redirect to login page
+        alert('Session expired. Please log in again.');
+        window.location.href = '/';
+        // Redirect to login page, etc.
+      }
+    }
+  
+    return response.json();
+  };
 
-export const createProject = (body)=>{
-    return fetch(`${API_URL}companies/`, postHeader(body)).then((res)=> {
-        res.json()
-    })
+const getApiRequest = async(url)=>{
+  let accessToken = localStorage.getItem("accessToken")
+
+  let response = await fetch(url, getHeader())
+
+  if (response.status===401){
+    // Token is expired, refresh it
+    accessToken = await refreshAccessToken()
+    if (accessToken){
+      // Retry the original request with the new access token
+      response = await fetch(url, getHeader())
+      } else {
+        // Handle logout or redirect to login page
+        alert('Session expired. Please log in again.');
+        // Redirect to login page, etc.
+        }
+        
+  }
+  return response.json()
 }
 
-export const getAllCompanies = () => {
-    return fetch(`${API_URL}companies/`, getHeader()) // Pass the object returned by getHeader()
-      .then((res) => res.json()) // Parse the response JSON
-      .catch((error) => {
-        console.error("Error fetching companies:", error);
-        throw error; // Re-throw for further handling
-      });
+export const createProject = async(body)=>{
+  try {
+    const response = await makeApiRequest(`${API_URL}companies/`, body);
+    return response;  // Return the response after a successful request
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw error; // Re-throw for further handling
+  }
+    }
+export const getAllCompanies = async() => {
+  try {
+    const response = await getApiRequest(`${API_URL}companies/`);
+    return response;  // Return the response after a successful request
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw error; // Re-throw for further handling
+  }
   };
   
 
@@ -87,5 +153,34 @@ export const login = async (username, password) => {
   } catch (error) {
       console.error("Login error:", error.response ? error.response.data : error.message);
       throw error; 
+  }
+};
+
+
+
+// forwarding function
+
+export const forwardToDirector = async (Id,onSuccess,onError) => {
+  const accessToken = localStorage.getItem('accessToken');
+  
+  try {
+    const response = await fetch(`${API_URL}companies/${Id}/forward_to_director/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      onSuccess(data); // Call the success callback
+    } else {
+      const error = await response.json();
+      onError(error); // Call the error callback
+    }
+  } catch (error) {
+    console.error("Error forwarding project:", error);
+    onError(error);
   }
 };

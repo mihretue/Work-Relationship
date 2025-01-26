@@ -15,7 +15,7 @@ import AdminHeader from './components/Admin/AdminHeader';
 import Users from './components/Admin/Users';
 import AdminNewProject from './components/Admin/AdminNewProject';
 import Reports from './components/Director/Reports'; // Ensure this path is correct
-
+import Projects from "./components/Director/Projects";
 
 const App = () => {
   return (
@@ -52,6 +52,7 @@ const App = () => {
               <Route path="dashboard" element={<DirectorDashboard />} />
               <Route path="new-project" element={<DirectorNewProject />} />
               <Route path="search" element={<DirectorSearch />} />
+              <Route path="new-projects/approve-projects"/>
             </Routes>
           </>
         } />

@@ -1,14 +1,15 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response  
-from rest_framework.decorators import action
+from rest_framework.decorators import action,permission_classes
 from .models import Company, Project
 from .serializers import ProjectSerializer, CompanySerializer , ProjectStatusUpdateSerializer
 from rest_framework.exceptions import ValidationError
-from .permissions import IsTeamLeader
+from .permissions import IsTeamLeader, IsDirector
+from rest_framework.permissions import IsAuthenticated
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.prefetch_related('projects').all()
     serializer_class = CompanySerializer
-    permission_classes = [IsTeamLeader]
+    permission_classes = [IsAuthenticated , IsTeamLeader| IsDirector]
     
     def get(self,request):
         data ={
@@ -16,6 +17,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
         
         }
         return Response(data,status=status.HTTP_200_OK)
+    # @permission_classes([IsAuthenticated, IsTeamLeader|IsDirector])
     def create(self, request, *args, **kwargs):
         # Custom validation for Company creation
         tin_number = request.data.get("tin_number")
@@ -94,11 +96,26 @@ class CompanyViewSet(viewsets.ModelViewSet):
         company.save()
         return Response({"message": "Company rejected successfully.", "remark": company.remark})
 
+    @action(detail=True,methods=["post"])
+    def forward_to_director(self,request,pk=None):
+        company = self.get_object()
+        company.forwarded_to_director=True
+        company.forwarded_by = request.user
+        company.save()
+        return Response({"message": "Company forwarded to director successfully."}, status=status.HTTP_200_OK)
+@permission_classes([IsDirector])
+@action(detail=False, methods=["get"])
+def forwarded_companies(self,request):
+    forwarded_company = Company.objects.filter(forwarded_to_director=True)
+    serializer = self.get_serializer(forwarded_company,many=True)
+    return Response(serializer.data,status=status.HTTP_200_OK)
+        
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.select_related('company').all()
     serializer_class = ProjectSerializer
 
+    @permission_classes([IsAuthenticated,IsTeamLeader | IsDirector])
     def create(self, request, *args, **kwargs):
         # Ensure the company exists before creating a project
         company_id = request.data.get("company")
