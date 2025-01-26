@@ -6,13 +6,15 @@ const Search = () => {
     const [filteredProjects, setFilteredProjects] = useState([]); // State for search results
     const [projects, setProjects] = useState([]);
 
+    // useEffect(() => {
+    //     const storedProjects = JSON.parse(localStorage.getItem("projects"));
+    //     if (storedProjects) {
+    //         setProjects(storedProjects);
+    //     }
+    // }, []);
     useEffect(() => {
-        const storedProjects = JSON.parse(localStorage.getItem("projects"));
-        if (storedProjects) {
-            setProjects(storedProjects);
-        }
-    }, []);
-
+        console.log("Filtered Projects Updated:", filteredProjects);
+    }, [filteredProjects]);
     const handleChange = (e) => {
         setTinNumber(e.target.value); // Update TIN number state
     };
@@ -23,12 +25,12 @@ const Search = () => {
         try {
             const result = await SearchByTin(tinNumber);
             console.log("results",result)
-            if (result && result.length > 0) {
-              setFilteredProjects(result);
-              console.log("filtered projects",filteredProjects)
+            if (result) {
+                setFilteredProjects([result]); // Wrap the object in an array
+                console.log("Filtered Projects State:", [result]);
             } else {
-              console.warn("No matching records found.");
-              setFilteredProjects([]);
+                console.warn("No matching records found.");
+                setFilteredProjects([]);
             }
           } catch (error) {
             console.error("Error during search:", error);
@@ -51,8 +53,6 @@ const Search = () => {
                     <button type="submit">Search</button>
                 </form>
             </div>
-
-            {filteredProjects.length > 0 && (
                 <div className="results">
                     <h3>Search Results</h3>
                     <div className="project-details">
@@ -92,11 +92,6 @@ const Search = () => {
                         </table>
                     </div>
                 </div>
-            )}
-
-            {filteredProjects.length === 0 && tinNumber && (
-                <p className="no-results">No results found for TIN Number: {tinNumber}</p>
-            )}
         </div>
     );
 };

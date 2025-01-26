@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import User
+from datetime import date
 # Company Model
 class Company(models.Model):
     tin_number = models.CharField(max_length=50, unique=True)
@@ -14,6 +15,7 @@ class Company(models.Model):
     approved = models.BooleanField(default=False)
     forwarded_to_director = models.BooleanField(default=False)
     forwarded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="forwarded_company")
+    created_at = models.DateField(auto_now_add=True)
     def __str__(self):
         return self.company_name
     

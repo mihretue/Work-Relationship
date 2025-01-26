@@ -217,6 +217,7 @@ export const SearchByTin= async(tinNumber)=>{
   const url = `${API_URL}companies/search-by-tin/?tin_number=${tinNumber}`;
   try {
     const response = await getApiRequest(url);
+    console.log("Api Response :",response)
     return response;  // Ensure this returns the actual response
   } catch (error) {
     console.error("Error in SearchByTin:", error);
