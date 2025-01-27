@@ -23,8 +23,9 @@ class Company(models.Model):
 # Project Model
 class Project(models.Model):
     STATUS_CHOICES = [
-        ("finished", "Finished"),
-        ("unfinished", "Unfinished")
+        ("finished", "Completed"),
+        ("unfinished", "Unfinished"),
+        ("ongoing","Ongoing")
     ]
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='projects')  # Link to Company
     project_name = models.CharField(max_length=100)

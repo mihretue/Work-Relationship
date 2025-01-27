@@ -163,6 +163,17 @@ const NewProject = () => {
   );
   };
   
+  const flattenedProjects = data.reduce((acc, company) => {
+    company.projects.forEach(project => {
+      acc.push({
+        ...company,
+        project_name: project.project_name,
+        project_status: project.status
+      });
+    });
+    
+    return acc;
+  }, []);
   const handleEdit = (rowData) => {
     console.log("Editing data:", rowData);
     // Add your edit logic here, such as populating the form with row data
@@ -176,6 +187,30 @@ const NewProject = () => {
       { accessorKey: "tin_number", header: "TIN Number" },
       { accessorKey: "manager_name", header: "Manager Name" },
       { accessorKey: "company_name", header: "Company Name" },
+      {
+        accessorKey: "status",
+        header: "Status",
+        Cell:({row})=>{
+          const {approved, forwarded_to_director} = row.original;
+          return (
+            <span>
+              {
+                approved ? "Approved" : forwarded_to_director?"Forwarded":"Pending"
+              }
+            </span>
+          )
+        }
+      },
+      {header:"Project Status",
+        accessorKey:'projects',
+        Cell:({row})=>{
+            const { project_name, project_status } = row.original;
+            return (
+            <div>
+         {project_status || "No status"}
+    </div>
+  );
+}},
       {
         header: "Actions",
         accessorKey: "actions", 
@@ -234,7 +269,7 @@ const NewProject = () => {
         /> */}
         <MantineReactTable
           columns={companyCol}
-          data={data}
+          data={flattenedProjects}
           state={{
             isLoading, // Show loading state
           }}
@@ -368,7 +403,7 @@ const NewProject = () => {
                         onChange={handleChange}
                         required
                     >
-                        <option value="unfinished">Unfinished</option>
+                        <option value="active">Active</option>
                         <option value="completed">Completed</option>
                     </select>
                 </div>

@@ -68,7 +68,20 @@ const Projects = () => {
         { accessorKey: "tin_number", header: "TIN Number" },
         { accessorKey: "manager_name", header: "Manager Name" },
         { accessorKey: "company_name", header: "Company Name" },
-        // {accessorKey:"approved",header:"Status"},
+        {
+            accessorKey:"status",
+            header:"Status",
+            Cell:({row})=>{
+                const {approved}  = row.original;
+                return(
+                    <span>
+                        {
+                            approved?"Approved":"Waiting Approval"
+                        }
+                    </span>
+                )
+            }
+        },
         {
           header: "Actions",
           accessorKey: "actions", 

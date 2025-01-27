@@ -225,3 +225,29 @@ export const SearchByTin= async(tinNumber)=>{
   }
 
 }
+
+
+export const StatusUpdate = async(companyId,projectId,status)=>{
+  const accessToken = localStorage.getItem("accessToken")
+  const url = `${API_URL}companies/${companyId}/projects/${projectId}/status/`
+  const data = {status:status}
+  const options = {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(data)
+      };
+      return fetch(url,options)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+          }
+          throw new Error(response.statusText);
+          })
+          .catch(error => {
+            console.error('Error updating status:', error);
+            return error;
+            });
+}
