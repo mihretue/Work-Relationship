@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation after login
+import '../styles/LoginPage.css'; // Import a CSS file for styling
 
 const LoginPage = () => {
     const [role, setRole] = useState('');
@@ -22,13 +23,14 @@ const LoginPage = () => {
     };
 
     return (
-        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ backgroundColor: '#007bff', width: '100%', padding: '20px', color: 'white', textAlign: 'center', position: 'fixed', top: 0 }}>
-                <h2>Login</h2>
+        <div className="login-page">
+            <div className="login-header">
+                <h1>Work Relationship Manager</h1>
             </div>
-            <div style={{ marginTop: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', flex: 1 }}>
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '400px', height: 'auto', padding: '30px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', marginTop: '50px' }}>
-                    <select value={role} onChange={(e) => setRole(e.target.value)} required style={{ margin: '10px 0', padding: '15px', width: '100%', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}>
+            <div className="login-form-container">
+                <form onSubmit={handleSubmit} className="login-form">
+                    <h2>Login</h2>
+                    <select value={role} onChange={(e) => setRole(e.target.value)} required className="login-input">
                         <option value="">Select Role</option>
                         <option value="admin">Admin</option>
                         <option value="teamleader">Team Leader</option>
@@ -40,7 +42,7 @@ const LoginPage = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
-                        style={{ margin: '10px 0', padding: '15px', width: '100%', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        className="login-input"
                     />
                     <input
                         type="password"
@@ -48,9 +50,9 @@ const LoginPage = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        style={{ margin: '10px 0', padding: '15px', width: '100%', fontSize: '16px', borderRadius: '4px', border: '1px solid #ccc' }}
+                        className="login-input"
                     />
-                    <button type="submit" style={{ padding: '15px 30px', marginTop: '10px', fontSize: '16px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', transition: 'background-color 0.3s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}>
+                    <button type="submit" className="login-button">
                         Login
                     </button>
                 </form>
