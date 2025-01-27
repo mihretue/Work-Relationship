@@ -1,49 +1,59 @@
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import UserSignupSerializer, UserLoginSerializer
+from .serializers import UserSignupSerializer, CustomTokenObtainPairSerializer
+from .models import User
+from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAdmin, IsTeamLeader, IsDirector
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.http import JsonResponse
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework.permissions import BasePermission, IsAuthenticated
+# from rest_framework_simplejwt.views import TokenObtainPairView
 class UserSignupView(APIView):
-    def post(self, request):
-        serializer = UserSignupSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({
-                "message": "User created successfully",
-                "username": user.username,
-                "role": user.role,
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        try:
+            body = json.loads(request.body)
+            username = body.get("username")
+            password = body.get("password")
+            role = body.get("role")  # Capture the role
 
-class UserLoginView(APIView):
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
+            # Check if the username already exists
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'Username already exists'}, status=400)
+
+            # Create the user
+            user = User(username=username)
+            user.set_password(password)  # Hash the password
+            user.is_active = True  # Set user as active
+            user.save()
+
+            # Handle role assignment if using a custom user model or related model
+            # e.g., UserProfile.objects.create(user=user, role=role)
+
+            return JsonResponse({'message': 'User created successfully'}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+@method_decorator(csrf_exempt, name='dispatch')
+class CustomTokenObtainPairView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = CustomTokenObtainPairSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.validated_data['user']
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                "access_token": str(refresh.access_token),
-                "refresh_token": str(refresh),
-                "role": user.role,
-            }, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.validated_data)
+        return Response(serializer.errors, status=400)
     
-class AdminDashboardView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
-
-    def get(self, request):
-        return Response({"message": "Welcome to the admin dashboard"})
-
-class TeamLeaderDashboardView(APIView):
-    permission_classes = [IsAuthenticated, IsTeamLeader]
-
-    def get(self, request):
-        return Response({"message": "Welcome to the team leader dashboard"})
-
-class DirectorDashboardView(APIView):
-    permission_classes = [IsAuthenticated, IsDirector]
-
-    def get(self, request):
-        return Response({"message": "Welcome to the director dashboard"})
+    
+# class IsTeamLeaderOrDirector(BasePermission):
+#     def has_permission(self,request, view):
+#         user = request.user
+#         if user.is_authenticated:
+#             if user.role == 'team_leader' or user.role == 'director':
+#                 return True
+            
+# class CompaniesBie

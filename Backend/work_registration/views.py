@@ -4,11 +4,18 @@ from rest_framework.decorators import action
 from .models import Company, Project
 from .serializers import ProjectSerializer, CompanySerializer , ProjectStatusUpdateSerializer
 from rest_framework.exceptions import ValidationError
-
+from .permissions import IsTeamLeader
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.prefetch_related('projects').all()
     serializer_class = CompanySerializer
-
+    permission_classes = [IsTeamLeader]
+    
+    def get(self,request):
+        data ={
+            "message":"this dat is only for team leader"
+        
+        }
+        return Response(data,status=status.HTTP_200_OK)
     def create(self, request, *args, **kwargs):
         # Custom validation for Company creation
         tin_number = request.data.get("tin_number")
