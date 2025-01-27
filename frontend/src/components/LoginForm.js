@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import "../styles/LoginForm.css"; // Import a CSS file for styling
+import "../styles/LoginForm.css"; // Ensure this path is correct
 
 const LoginForm = () => {
   const { loading } = useContext(AuthContext);
