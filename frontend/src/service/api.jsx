@@ -184,3 +184,70 @@ export const forwardToDirector = async (Id,onSuccess,onError) => {
     onError(error);
   }
 };
+
+
+export const approveCompany =(companyId,remark=null)=>{
+  const accessToken = localStorage.getItem('accessToken');
+  const url = `${API_URL}companies/${companyId}/approve/`;
+  const data = {remark:remark};
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(data)
+      };
+      return fetch(url,options)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+          }
+          throw new Error(response.statusText);
+          })
+          .catch(error => {
+            console.error('Error approving company:', error);
+            return error;
+            });
+
+}
+
+export const SearchByTin= async(tinNumber)=>{
+  const accessToken = localStorage.getItem('accessToken');
+  const url = `${API_URL}companies/search-by-tin/?tin_number=${tinNumber}`;
+  try {
+    const response = await getApiRequest(url);
+    console.log("Api Response :",response)
+    return response;  // Ensure this returns the actual response
+  } catch (error) {
+    console.error("Error in SearchByTin:", error);
+    throw error; // Re-throw for further handling
+  }
+
+}
+
+
+export const StatusUpdate = async(companyId,projectId,status)=>{
+  const accessToken = localStorage.getItem("accessToken")
+  const url = `${API_URL}companies/${companyId}/projects/${projectId}/status/`
+  const data = {status:status}
+  const options = {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(data)
+      };
+      return fetch(url,options)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+          }
+          throw new Error(response.statusText);
+          })
+          .catch(error => {
+            console.error('Error updating status:', error);
+            return error;
+            });
+}

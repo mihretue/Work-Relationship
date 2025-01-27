@@ -15,7 +15,7 @@ const NewProject = () => {
     grade: "",
     organization: "",
     performance: "",
-    remark: "",
+    
     approved: false,
     projects: [
       {
@@ -92,7 +92,7 @@ const NewProject = () => {
         grade: "",
         organization: "",
         performance: "",
-        remark: "",
+      
         approved: false,
         projects: [
           {
@@ -129,6 +129,7 @@ const NewProject = () => {
   useEffect(() => {
     fetchCompanies(); // Call the fetch function when the component mounts
   }, []);
+  
   const getNestedValue = (obj, path) => {
     return path.split('.').reduce((acc, key) => acc && acc[key], obj);
   };
@@ -162,6 +163,17 @@ const NewProject = () => {
   );
   };
   
+  const flattenedProjects = data.reduce((acc, company) => {
+    company.projects.forEach(project => {
+      acc.push({
+        ...company,
+        project_name: project.project_name,
+        project_status: project.status
+      });
+    });
+    
+    return acc;
+  }, []);
   const handleEdit = (rowData) => {
     console.log("Editing data:", rowData);
     // Add your edit logic here, such as populating the form with row data
@@ -176,9 +188,35 @@ const NewProject = () => {
       { accessorKey: "manager_name", header: "Manager Name" },
       { accessorKey: "company_name", header: "Company Name" },
       {
+        accessorKey: "status",
+        header: "Status",
+        Cell:({row})=>{
+          const {approved, forwarded_to_director} = row.original;
+          return (
+            <span>
+              {
+                approved ? "Approved" : forwarded_to_director?"Forwarded":"Pending"
+              }
+            </span>
+          )
+        }
+      },
+      {header:"Project Status",
+        accessorKey:'projects',
+        Cell:({row})=>{
+            const { project_name, project_status } = row.original;
+            return (
+            <div>
+         {project_status || "No status"}
+    </div>
+  );
+}},
+      {
         header: "Actions",
         accessorKey: "actions", 
-        Cell: ({ row }) => (
+        Cell: ({ row }) => {
+          const {forwarded_to_director}= row.original;
+          return (
           <div className="action-buttons">
             <Button
               size="xs"
@@ -187,7 +225,8 @@ const NewProject = () => {
             >
               View
             </Button>
-            <Button
+            {!forwarded_to_director &&
+              (<><Button
               size="xs"
               color="red"
               onClick={() => handleDelete(row.original)}
@@ -201,6 +240,8 @@ const NewProject = () => {
             >
               Forward
             </Button>
+            </>
+            )}
             <Button
               size="xs"
               color="yellow"
@@ -209,7 +250,8 @@ const NewProject = () => {
               Edit
             </Button>
           </div>
-        ),
+          )
+        },
       },
     
   ];
@@ -227,7 +269,7 @@ const NewProject = () => {
         /> */}
         <MantineReactTable
           columns={companyCol}
-          data={data}
+          data={flattenedProjects}
           state={{
             isLoading, // Show loading state
           }}
@@ -240,6 +282,7 @@ const NewProject = () => {
         opened={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Create New Project"
+        size={120}
       >
         <form onSubmit={handleSubmit}>
           <div className="form-row">
@@ -318,12 +361,7 @@ const NewProject = () => {
                         <option value="Excellent performance in AI development and software solutions.">Excellent performance in AI development and software solutions.</option>
                     </select>
                 </div>
-                <textarea
-                    name="remark"
-                    placeholder="Additional Remarks"
-                    value={formData.remark}
-                    onChange={handleChange}
-                ></textarea>
+                
           <div className="form-row">
             <input
               name="project_name"
@@ -365,7 +403,7 @@ const NewProject = () => {
                         onChange={handleChange}
                         required
                     >
-                        <option value="unfinished">Unfinished</option>
+                        <option value="active">Active</option>
                         <option value="completed">Completed</option>
                     </select>
                 </div>

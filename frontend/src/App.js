@@ -52,7 +52,7 @@ const App = () => {
               <Route path="dashboard" element={<DirectorDashboard />} />
               <Route path="new-project" element={<DirectorNewProject />} />
               <Route path="search" element={<DirectorSearch />} />
-              <Route path="new-projects/approve-projects"/>
+              <Route path="new-projects/approve-projects" element={<Projects/>}/>
             </Routes>
           </>
         } />

@@ -12,7 +12,9 @@ const Users = () => {
     const handleChange = (e) => {
         setUserData({ ...userData, [e.target.name]: e.target.value });
     };
-
+const userCol =[
+    { accessorKey: "tin_number", header: "TIN Number" },
+]
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {

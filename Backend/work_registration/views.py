@@ -4,12 +4,12 @@ from rest_framework.decorators import action,permission_classes
 from .models import Company, Project
 from .serializers import ProjectSerializer, CompanySerializer , ProjectStatusUpdateSerializer
 from rest_framework.exceptions import ValidationError
-from .permissions import IsTeamLeader, IsDirector
+from .permissions import IsTeamLeader, IsDirector, IsTeamLeaderOrDirector
 from rest_framework.permissions import IsAuthenticated
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.prefetch_related('projects').all()
     serializer_class = CompanySerializer
-    permission_classes = [IsAuthenticated , IsTeamLeader| IsDirector]
+    permission_classes = [IsAuthenticated , IsTeamLeaderOrDirector]
     
     def get(self,request):
         data ={
@@ -47,7 +47,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             raise ValidationError(serializer.errors)
-    
+    # @permission_classes([IsDirector])
     @action(detail=False, methods=['get'], url_path='search-by-tin')
     def search_by_tin(self, request):
         tin_number = request.query_params.get("tin_number")
