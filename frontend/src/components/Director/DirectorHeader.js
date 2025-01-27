@@ -16,7 +16,9 @@ const DirectorHeader = () => {
             <nav style={{ display: 'flex', gap: '20px' }}>
                 <Link to="/director/dashboard" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Dashboard</Link>
                 <Link to="/director/new-project" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>New Projects</Link>
+                <Link to="/director/report" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }} >Report</Link>
                 <Link to="/director/search" style={{ color: 'white', textDecoration: 'none', fontSize: '18px' }}>Search</Link>
+
                 <button onClick={handleLogout} style={{ backgroundColor: 'transparent', border: 'none', color: 'white', cursor: 'pointer', fontSize: '18px' }}>Logout</button>
             </nav>
         </header>
