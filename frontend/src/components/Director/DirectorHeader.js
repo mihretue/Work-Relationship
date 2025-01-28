@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../../styles/DirectorHeader.css'; // Ensure this path is correct
+import "../../styles/DirectorHeader.css"
 
 const DirectorHeader = () => {
     const navigate = useNavigate();
