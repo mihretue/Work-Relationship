@@ -13,34 +13,34 @@ const DirectorDashboard = () => {
     const [contractorMoreThanOne, setContractorMoreThanOne] = useState(0);
 
     const generatePDF = () => {
-            
-    
-            const doc = new jsPDF();
-            doc.setFont("helvetica", "normal");  // Use a standard font
-            console.log(doc.getFontList());
-            
-            // Add the title
-            doc.setFontSize(20);
-            doc.text("Report", 20, 20);  // Report title
-            doc.setFontSize(12);
-            
-            // Add total projects, cost, and contractors with English labels
-            doc.text(`Total Projects: ${totalProjects}`, 20, 40);  // Total Projects
-            doc.text(`Total Cost: ${totalCost} $`, 20, 50);  // Total Cost
-            doc.text(`Total Contractors: ${totalContractors}`, 20, 60);  // Total Contractors
-            
-            // Add contractors with more than one project
-            doc.text(`Contractors with multiple projects: ${contractorMoreThanOne}`, 20, 70);  // Contractors with more than one project
-            
-            // // Add project details
-            // companyData.forEach((project, index) => {
-            //     doc.text(`Project ${index + 1}: ${project.projectName}`, 20, 80 + (10 * index));
-            // });
-            
-            // Save the PDF
-            doc.save(`Project_report_${totalContractors}.pdf`);
-        }
-        
+
+
+        const doc = new jsPDF();
+        doc.setFont("helvetica", "normal");  // Use a standard font
+        console.log(doc.getFontList());
+
+        // Add the title
+        doc.setFontSize(20);
+        doc.text("Report", 20, 20);  // Report title
+        doc.setFontSize(12);
+
+        // Add total projects, cost, and contractors with English labels
+        doc.text(`Total Projects: ${totalProjects}`, 20, 40);  // Total Projects
+        doc.text(`Total Cost: ${totalCost} $`, 20, 50);  // Total Cost
+        doc.text(`Total Contractors: ${totalContractors}`, 20, 60);  // Total Contractors
+
+        // Add contractors with more than one project
+        doc.text(`Contractors with multiple projects: ${contractorMoreThanOne}`, 20, 70);  // Contractors with more than one project
+
+        // // Add project details
+        // companyData.forEach((project, index) => {
+        //     doc.text(`Project ${index + 1}: ${project.projectName}`, 20, 80 + (10 * index));
+        // });
+
+        // Save the PDF
+        doc.save(`Project_report_${totalContractors}.pdf`);
+    }
+
 
 
     useEffect(() => {
@@ -54,7 +54,7 @@ const DirectorDashboard = () => {
     return (
         <div style={{ padding: '20px', marginTop: '20px' }}>
             <DirectorHeader />
-            <div style={{marginTop:'2rem',padding:'0.5rem'}}>
+            <div style={{ marginTop: '2rem', padding: '0.5rem' }}>
                 <Button onClick={generatePDF}>Report</Button>
             </div>
             <div className="dashboard-content">
@@ -87,6 +87,7 @@ const DirectorDashboard = () => {
                         <th style={tableHeaderStyle}>Company Name</th>
                         <th style={tableHeaderStyle}>Number of Projects</th>
                         <th style={tableHeaderStyle}>Manager Name</th>
+                        <th style={tableHeaderStyle}>Total Project Cost</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -95,6 +96,9 @@ const DirectorDashboard = () => {
                             <td style={tableCellStyle}>{company.company_name}</td>
                             <td style={tableCellStyle}>{company.projects ? company.projects.length : 0}</td>
                             <td style={tableCellStyle}>{company.manager_name}</td>
+                            <td style={tableCellStyle}>
+                                {company.projects ? company.projects.reduce((acc, project) => acc + project.project_cost, 0) : 0}
+                            </td>
                         </tr>
                     ))}
                 </tbody>

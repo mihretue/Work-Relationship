@@ -32,6 +32,8 @@ const NewProject = () => {
   const [projects, setProjects] = useState([]); // State to manage project data for the table
   const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle the modal
   const [refetch, setRefetch] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false); // State for the view modal
+  const [selectedProject, setSelectedProject] = useState(null); // State to hold the selected project data
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -133,9 +135,9 @@ const NewProject = () => {
   const getNestedValue = (obj, path) => {
     return path.split('.').reduce((acc, key) => acc && acc[key], obj);
   };
-  const handleView = (rowData) => {
-    console.log("Viewing data:", rowData);
-    // Add your view logic here, such as opening a modal with detailed info
+  const handleView = (project) => {
+    setSelectedProject(project); // Set the selected project data
+    setViewModalOpen(true); // Open the view modal
   };
 
   const handleDelete = (rowData) => {
@@ -440,7 +442,35 @@ const NewProject = () => {
         </form>
       </Modal>
 
-
+      {/* Modal for Viewing Project Details */}
+      <Modal
+        opened={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        title="Project Details"
+        size="lg"
+        styles={{
+          content: {
+            margin: '20px auto',
+            marginTop: '60px',
+            width: '80%',
+            maxWidth: '800px',
+          },
+        }}
+      >
+        {selectedProject && (
+          <div>
+            <h3>Project Name: {selectedProject.project_name}</h3>
+            <p><strong>TIN Number:</strong> {selectedProject.tin_number}</p>
+            <p><strong>Manager Name:</strong> {selectedProject.manager_name}</p>
+            <p><strong>Company Name:</strong> {selectedProject.company_name}</p>
+            <p><strong>Phone Number:</strong> {selectedProject.phone_number}</p>
+            <p><strong>Project Cost:</strong> {selectedProject.projects[0].project_cost}</p>
+            <p><strong>Year:</strong> {selectedProject.projects[0].year}</p>
+            <p><strong>Status:</strong> {selectedProject.projects[0].status}</p>
+            <p><strong>Remarks:</strong> {selectedProject.projects[0].project_remark}</p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
