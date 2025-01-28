@@ -87,7 +87,7 @@ const DirectorNewProject = () => {
           console.log("Response from API:", response);
     
           // Update the project list for the table
-          setProjects((prevProjects) => [
+          setData((prevProjects) => [
             ...prevProjects,
             { ...updatedFormData, id: projects.length + 1 },
           ]);
@@ -175,13 +175,23 @@ const DirectorNewProject = () => {
 
     const handleForward = (rowData) => {
         const { id } = rowData; // Extract the ID of the item to be forwarded
-    
+      //   setProjects((prevProjects) =>
+      //     prevProjects.map((project) =>
+      //         project.id === id ? { ...project, status: 'Forwarding...' } : project
+      //     )
+      // );
         forwardToDirector(
         id, 
         (data) => {
-            alert("Project forwarded successfully!");
+            // alert("Project forwarded successfully!");
+            showSuccessNotification("Project forwarded successfully!")
             console.log("Response Data:", data);
             setRefetch((prev) => !prev);
+            setData((prevData) =>
+              prevData.map((row) =>
+                row.id === id ? { ...row, forwarded_to_director: true } : row
+              )
+            );
         },
         (error) => {
           // Error callback
