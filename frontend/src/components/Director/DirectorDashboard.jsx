@@ -4,6 +4,7 @@ import { fetchAllCompany } from './FetchingForReport';
 import DirectorHeader from './DirectorHeader';
 import jsPDF from 'jspdf';
 import { Button } from '@mantine/core';
+
 const DirectorDashboard = () => {
     const [companyData, setCompanyData] = useState([]);
     const [totalProjects, setTotalProjects] = useState(0);
