@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/Users.css'; // Corrected import path
 import { createUser } from '../../service/api';
+import { showErrorNotification, showSuccessNotification } from '../../common/notifications';
 
 const Users = () => {
     const [userData, setUserData] = useState({
@@ -12,20 +13,21 @@ const Users = () => {
     const handleChange = (e) => {
         setUserData({ ...userData, [e.target.name]: e.target.value });
     };
-const userCol =[
-    { accessorKey: "tin_number", header: "TIN Number" },
-]
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await createUser(userData)
+            showSuccessNotification("User Registered Successfully.")
             setUserData({
                 username: "",
                 role: "",
                 password: "",
             });
+
         } catch (error) {
             console.error("Error", error)
+            showErrorNotification("Error in Registering User!")
         }
     };
 

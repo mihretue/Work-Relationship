@@ -1,27 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import '../../styles/Search.css'; // Corrected import path
-
+import { SearchByTin } from '../../service/api';
+import { showErrorNotification } from '../../common/notifications';
 const Search = () => {
     const [tinNumber, setTinNumber] = useState(''); // State for TIN number
     const [filteredProjects, setFilteredProjects] = useState([]); // State for search results
     const [projects, setProjects] = useState([]);
 
+    
     useEffect(() => {
-        const storedProjects = JSON.parse(localStorage.getItem("projects"));
-        if (storedProjects) {
-            setProjects(storedProjects);
-        }
-    }, []);
+        console.log("Filtered Projects Updated:", filteredProjects);
+    }, [filteredProjects]);
 
     const handleChange = (e) => {
-        setTinNumber(e.target.value); // Update TIN number state
+        setTinNumber(e.target.value); 
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Filter projects with the matching TIN number
-        const matches = projects.filter(project => project.tin_number === tinNumber);
-        setFilteredProjects(matches); // Update state with matching results
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        try {
+            const result = await SearchByTin(tinNumber);
+            console.log("results",result)
+            if (result) {
+                setFilteredProjects([result]); 
+                console.log("Filtered Projects State:", [result]);
+            } else {
+                
+                showErrorNotification("No matching records found.")
+                setFilteredProjects([]);
+            }
+          } catch (error) {
+            console.error("Error during search:", error);
+            
+            showErrorNotification("An error occurred while searching. Please try again.")
+          }
     };
 
     return (
@@ -39,8 +52,6 @@ const Search = () => {
                     <button type="submit">Search</button>
                 </form>
             </div>
-
-            {filteredProjects.length > 0 && (
                 <div className="results">
                     <h3>Search Results</h3>
                     <div className="project-details">
@@ -61,30 +72,27 @@ const Search = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredProjects.map(project => (
-                                    <tr key={project.id}>
-                                        <td>{project.tin_number}</td>
-                                        <td>{project.manager_name}</td>
-                                        <td>{project.company_name}</td>
-                                        <td>{project.phone_number}</td>
-                                        <td>{project.projects[0].project_name}</td>
-                                        <td>{project.projects[0].project_cost}</td>
-                                        <td>{project.company_type}</td>
-                                        <td>{project.grade}</td>
-                                        <td>{project.organization}</td>
-                                        <td>{project.performance}</td>
-                                        <td>{project.projects[0].categories}</td>
-                                    </tr>
-                                ))}
+                                {filteredProjects.map((project) =>
+                                    project.projects.map((proj, index) => (
+                                        <tr key={`${project.id}-${index}`}>
+                                            <td>{project.tin_number}</td>
+                                            <td>{project.manager_name}</td>
+                                            <td>{project.company_name}</td>
+                                            <td>{project.phone_number}</td>
+                                            <td>{proj.project_name}</td> {/* Show each project separately */}
+                                            <td>{proj.project_cost}</td>
+                                            <td>{project.company_type}</td>
+                                            <td>{project.grade}</td>
+                                            <td>{project.organization}</td>
+                                            <td>{project.performance}</td>
+                                            <td>{proj.categories}</td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>
                 </div>
-            )}
-
-            {filteredProjects.length === 0 && tinNumber && (
-                <p className="no-results">No results found for TIN Number: {tinNumber}</p>
-            )}
         </div>
     );
 };

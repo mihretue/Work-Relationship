@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../styles/Search.css'; // Corrected import path
 import { SearchByTin } from '../../service/api';
+import { showErrorNotification } from '../../common/notifications';
 const Search = () => {
     const [tinNumber, setTinNumber] = useState(''); // State for TIN number
     const [filteredProjects, setFilteredProjects] = useState([]); // State for search results
@@ -25,12 +26,14 @@ const Search = () => {
                 setFilteredProjects([result]); 
                 console.log("Filtered Projects State:", [result]);
             } else {
-                console.warn("No matching records found.");
+                
+                showErrorNotification("No matching records found.")
                 setFilteredProjects([]);
             }
           } catch (error) {
             console.error("Error during search:", error);
-            alert("An error occurred while searching. Please try again.");
+            
+            showErrorNotification("An error occurred while searching. Please try again.")
           }
     };
 

@@ -118,9 +118,11 @@ const DirectorNewProject = () => {
               },
             ],
           });
+          showSuccessNotification("Created Successfully!")
           setRefetch(true)
         } catch (error) {
           console.error("Error creating project:", error);
+          showErrorNotification(`Error creating project: ${error}`,"Error")
         }
       };
 
@@ -196,7 +198,8 @@ const DirectorNewProject = () => {
         (error) => {
           // Error callback
           console.error("Error forwarding project:", error);
-          alert(error.message ||"Failed to forward project. Please try again.");
+          // alert(error.message ||"Failed to forward project. Please try again.");
+          showErrorNotification("Failed to forward project. Please try again." || error.message )
         }
     );
     };
@@ -224,7 +227,8 @@ const closeEditModal = ()=>{
 }
     const handleStatusUpdate =()=>{
         if (!selectedCompany || !status) {
-            alert("Please select a status before updating."); // Validate input
+            // alert("Please select a status before updating."); 
+            showAlertNotification("Please select a status before updating.","Warning")
             return;
           }
         const { id: companyId, projects } = selectedCompany;
@@ -235,14 +239,16 @@ const closeEditModal = ()=>{
         projectId,
         status,
         (data) => {
-            alert("Project status updated successfully!");
+            
+            showSuccessNotification("Project status updated successfully!",'success')
             console.log("Response Data:", data);
             setRefetch((prev) => !prev);
             closeModal()
             },
             (error) => {
                 console.error("Error updating project status:", error);
-                alert(error.message ||"Failed to updating project status. Please try again.");
+                showErrorNotification("Failed to update project status. Please try again." || error.message )
+          // alert(error.message ||"Failed to updating project status. Please try again.");
             }
     )
 
