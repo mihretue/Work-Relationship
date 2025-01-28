@@ -16,7 +16,7 @@ import Users from './components/Admin/Users';
 import AdminNewProject from './components/Admin/AdminNewProject';
 import Reports from './components/Director/Reports'; // Ensure this path is correct
 import Projects from "./components/Director/Projects";
-
+import DirectorReport from "./components/Director/Reports"
 const App = () => {
   return (
     <Router>
@@ -53,6 +53,7 @@ const App = () => {
               <Route path="new-project" element={<DirectorNewProject />} />
               <Route path="search" element={<DirectorSearch />} />
               <Route path="new-projects/approve-projects" element={<Projects/>}/>
+              <Route path="report" element={<DirectorReport />} />
             </Routes>
           </>
         } />

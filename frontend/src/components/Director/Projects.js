@@ -144,6 +144,7 @@ const Projects = () => {
                     placeholder="Additional Remarks"
                     value={remark}
                     onChange={(e)=>setRemark(e.target.value)}
+                    error={error}
                 />
                 <Button onClick={handleApprove} mt="md">
                     Approve
