@@ -1,138 +1,102 @@
 import React, { useEffect, useState } from 'react';
-// import Sidebar from './Sidebar'; // Remove this line
-import Reports from './Reports'; // Import the Reports component
-import { Link, useNavigate } from 'react-router-dom';
-import {
-    FaClipboardList,
-    FaCheckCircle,
-    FaExclamationCircle,
-    FaTasks
-} from 'react-icons/fa'; // Import icons
-// import { useNavigate } from 'react-router-dom';
-
-
-const Dashboard = () => {
-    const navigate = useNavigate()
-    const [projects, setProjects] = useState([]);
-    const [showDetails, setShowDetails] = useState(null); // State to control visibility of project details
+import { FaClipboardList, FaTasks, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { fetchAllCompany } from '../Director/FetchingForReport';
+import DirectorHeader from './Header';
+import jsPDF from 'jspdf';
+import { Button } from '@mantine/core';
+const DirectorDashboard = () => {
+    const [companyData, setCompanyData] = useState([]);
+    const [totalProjects, setTotalProjects] = useState(0);
+    const [totalCost, setTotalCost] = useState('');
+    const [totalContractors, setTotalContractors] = useState(0);
+    const [contractorMoreThanOne, setContractorMoreThanOne] = useState(0);
     
+    const generatePDF = () => {
+        
+
+        const doc = new jsPDF();
+        doc.setFont("helvetica", "normal");  // Use a standard font
+        console.log(doc.getFontList());
+        
+        // Add the title
+        doc.setFontSize(20);
+        doc.text("Report", 20, 20);  // Report title
+        doc.setFontSize(12);
+        
+        // Add total projects, cost, and contractors with English labels
+        doc.text(`Total Projects: ${totalProjects}`, 20, 40);  // Total Projects
+        doc.text(`Total Cost: ${totalCost} $`, 20, 50);  // Total Cost
+        doc.text(`Total Contractors: ${totalContractors}`, 20, 60);  // Total Contractors
+        
+        // Add contractors with more than one project
+        doc.text(`Contractors with multiple projects: ${contractorMoreThanOne}`, 20, 70);  // Contractors with more than one project
+        
+        // // Add project details
+        // companyData.forEach((project, index) => {
+        //     doc.text(`Project ${index + 1}: ${project.projectName}`, 20, 80 + (10 * index));
+        // });
+        
+        // Save the PDF
+        doc.save(`Project_report_${totalContractors}.pdf`);
+    }
     
-    const handleLogout = () => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("role");
-        navigate("/login");
-    };
 
     useEffect(() => {
-        // Fetch data from an API or local storage
-        const fetchData = async () => {
-            try {
-                const response = await fetch('/api/projects'); // Replace with your API endpoint
-                const data = await response.json();
-                setProjects(data);
-            } catch (error) {
-                console.error("Error fetching data:", error); // Error handling
-            }
-            const expiresAt = localStorage.getItem("expiresAt");
-
-            if (expiresAt && new Date().getTime() > expiresAt) {
-            handleLogout();
-    }
-        };
-
-        fetchData();
+        fetchAllCompany(setCompanyData, setTotalContractors, setTotalProjects, setContractorMoreThanOne, setTotalCost);
     }, []);
 
-    // Function to handle click on cards
-    const handleCardClick = (category) => {
-        setShowDetails(category); // Show details for the selected category
-    };
-
-    // Filtered projects based on category
-    const filteredProjects = (status) => {
-        return projects.filter((project) => project.status === status);
-    };
+    if (!companyData.length) {
+        return <div>Loading...</div>;
+    }
 
     return (
-        <div style={{ padding: '20px', marginTop: '20px' }}> 
-            <h2>Dashboard</h2>
-            <Reports projects={projects} /> 
-            {/* <div className="navigation">
-                    <Link to="/teamleader/projects" style={{ marginRight: '20px' }}>Projects</Link>
-                    <Link to="/teamleader/reports" style={{ marginRight: '20px' }}>Reports</Link>
-                </div> */}
+        <div style={{ padding: '20px', marginTop: '20px' }}>
+            <DirectorHeader />
+            <div>
+                <Button onClick={generatePDF} >Report</Button>
+            </div>
             <div className="dashboard-content">
-                <div className="card" onClick={() => handleCardClick('total')}>
+                <div className="card">
                     <FaClipboardList className="card-icon" />
                     <h3>Total Projects</h3>
-                    <p>{projects.length}</p>
+                    <p>{totalProjects}</p>
                 </div>
-                <div className="card" onClick={() => handleCardClick('active')}>
+                <div className="card">
                     <FaTasks className="card-icon" />
-                    <h3>Active Projects</h3>
-                    <p>{filteredProjects('active').length}</p>
+                    <h3>Total Contractors</h3>
+                    <p>{totalContractors}</p>
                 </div>
-                <div className="card" onClick={() => handleCardClick('completed')}>
+                <div className="card">
                     <FaCheckCircle className="card-icon" />
-                    <h3>Completed Projects</h3>
-                    <p>{filteredProjects('completed').length}</p>
+                    <h3>Contractors with more than 1 Project</h3>
+                    <p>{contractorMoreThanOne}</p>
                 </div>
-                <div className="card" onClick={() => handleCardClick('pending')}>
+                <div className="card">
                     <FaExclamationCircle className="card-icon" />
-                    <h3>Pending Projects</h3>
-                    <p>{filteredProjects('pending').length}</p>
+                    <h3>Total Cost</h3>
+                    <p>{totalCost} $</p>
                 </div>
             </div>
 
-            {/* Conditional rendering for project details */}
-            {showDetails && (
-                <div className="project-details">
-                    <h3>
-                        {showDetails === 'total' && 'Total Projects'}
-                        {showDetails === 'active' && 'Active Projects'}
-                        {showDetails === 'completed' && 'Completed Projects'}
-                        {showDetails === 'pending' && 'Pending Projects'}
-                    </h3>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-                        <thead>
-                            <tr>
-                                <th style={tableHeaderStyle}>TIN Number</th>
-                                <th style={tableHeaderStyle}>Manager</th>
-                                <th style={tableHeaderStyle}>Company</th>
-                                <th style={tableHeaderStyle}>Phone</th>
-                                <th style={tableHeaderStyle}>Project</th>
-                                <th style={tableHeaderStyle}>Cost</th>
-                                <th style={tableHeaderStyle}>Type</th>
-                                <th style={tableHeaderStyle}>Grade</th>
-                                <th style={tableHeaderStyle}>Organization</th>
-                                <th style={tableHeaderStyle}>Performance</th>
-                                <th style={tableHeaderStyle}>Category</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(showDetails === 'total' ? projects : filteredProjects(showDetails)).map((project) => (
-                                <tr key={project.id}>
-                                    <td style={tableCellStyle}>{project.tinNumber}</td>
-                                    <td style={tableCellStyle}>{project.managerName}</td>
-                                    <td style={tableCellStyle}>{project.companyName}</td>
-                                    <td style={tableCellStyle}>{project.phoneNumber}</td>
-                                    <td style={tableCellStyle}>{project.projectName}</td>
-                                    <td style={tableCellStyle}>{project.projectCost}</td>
-                                    <td style={tableCellStyle}>{project.companyType}</td>
-                                    <td style={tableCellStyle}>{project.grade}</td>
-                                    <td style={tableCellStyle}>{project.organization}</td>
-                                    <td style={tableCellStyle}>{project.performance}</td>
-                                    <td style={tableCellStyle}>{project.category}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button style={{ marginTop: '20px' }} onClick={() => setShowDetails(null)}>
-                        Close
-                    </button>
-                </div>
-            )}
+            <h3>Company Data</h3>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+                <thead>
+                    <tr>
+                        <th style={tableHeaderStyle}>Company Name</th>
+                        <th style={tableHeaderStyle}>Number of Projects</th>
+                        <th style={tableHeaderStyle}>Manager Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {companyData.map((company) => (
+                        <tr key={company.id}>
+                            <td style={tableCellStyle}>{company.company_name}</td>
+                            <td style={tableCellStyle}>{company.projects ? company.projects.length : 0}</td>
+                            <td style={tableCellStyle}>{company.manager_name}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };
@@ -151,4 +115,4 @@ const tableCellStyle = {
     textAlign: 'left',
 };
 
-export default Dashboard;
+export default DirectorDashboard;
