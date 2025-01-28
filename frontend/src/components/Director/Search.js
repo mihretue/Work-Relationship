@@ -6,17 +6,13 @@ const Search = () => {
     const [filteredProjects, setFilteredProjects] = useState([]); // State for search results
     const [projects, setProjects] = useState([]);
 
-    // useEffect(() => {
-    //     const storedProjects = JSON.parse(localStorage.getItem("projects"));
-    //     if (storedProjects) {
-    //         setProjects(storedProjects);
-    //     }
-    // }, []);
+    
     useEffect(() => {
         console.log("Filtered Projects Updated:", filteredProjects);
     }, [filteredProjects]);
+
     const handleChange = (e) => {
-        setTinNumber(e.target.value); // Update TIN number state
+        setTinNumber(e.target.value); 
     };
 
     const handleSubmit = async (e) => {
@@ -26,7 +22,7 @@ const Search = () => {
             const result = await SearchByTin(tinNumber);
             console.log("results",result)
             if (result) {
-                setFilteredProjects([result]); // Wrap the object in an array
+                setFilteredProjects([result]); 
                 console.log("Filtered Projects State:", [result]);
             } else {
                 console.warn("No matching records found.");
@@ -73,21 +69,23 @@ const Search = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredProjects.map((project) => (
-                                    <tr key={project.id}>
-                                        <td>{project.tin_number}</td>
-                                        <td>{project.manager_name}</td>
-                                        <td>{project.company_name}</td>
-                                        <td>{project.phone_number}</td>
-                                        <td>{project.projects[0].project_name}</td>
-                                        <td>{project.projects[0].project_cost}</td>
-                                        <td>{project.company_type}</td>
-                                        <td>{project.grade}</td>
-                                        <td>{project.organization}</td>
-                                        <td>{project.performance}</td>
-                                        <td>{project.projects[0].categories}</td>
-                                    </tr>
-                                ))}
+                                {filteredProjects.map((project) =>
+                                    project.projects.map((proj, index) => (
+                                        <tr key={`${project.id}-${index}`}>
+                                            <td>{project.tin_number}</td>
+                                            <td>{project.manager_name}</td>
+                                            <td>{project.company_name}</td>
+                                            <td>{project.phone_number}</td>
+                                            <td>{proj.project_name}</td> {/* Show each project separately */}
+                                            <td>{proj.project_cost}</td>
+                                            <td>{project.company_type}</td>
+                                            <td>{project.grade}</td>
+                                            <td>{project.organization}</td>
+                                            <td>{project.performance}</td>
+                                            <td>{proj.categories}</td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>

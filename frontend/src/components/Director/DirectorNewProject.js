@@ -3,9 +3,11 @@ import { Modal, Button,Select } from "@mantine/core";
 import { MantineReactTable } from "mantine-react-table";
 import "../../styles/NewProject.css";
 import { Navigate, useNavigate } from "react-router-dom";
-import { getAllCompanies,createProject,forwardToDirector,StatusUpdate } from "../../service/api";
+import { getAllCompanies,createProject,forwardToDirector,StatusUpdate,editCompany } from "../../service/api";
 import { FaCreativeCommonsNcJp } from "react-icons/fa";
 import ProjectStatusUpdate from "./ProjectStatusUpdate";
+
+
 const DirectorNewProject = () => {
     const [data, setData] = useState([]);
     const [refetch, setRefetch] = useState(false);
@@ -166,11 +168,7 @@ const DirectorNewProject = () => {
         localStorage.setItem("projects", JSON.stringify(updatedProjects));
     };
 
-    const handleEdit = (project) => {
-        setFormData(project);
-        setIsModalOpen(true);
-    };
-    
+   
     const handleView=()=>{
         console.log("view")
     }
@@ -231,6 +229,19 @@ const DirectorNewProject = () => {
     )
 
     }
+
+    const handleEdit =()=>{
+        if(!selectedCompany){
+            
+        }
+    }
+
+
+
+
+
+
+
 
     const closeModal = () => {
         setSelectedCompany(null);
