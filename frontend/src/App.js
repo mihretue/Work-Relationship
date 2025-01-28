@@ -17,8 +17,11 @@ import AdminNewProject from './components/Admin/AdminNewProject';
 import Reports from './components/Director/Reports'; // Ensure this path is correct
 import Projects from "./components/Director/Projects";
 import DirectorReport from "./components/Director/Reports"
+import { Notifications } from "@mantine/notifications";
 const App = () => {
   return (
+    <>
+    <Notifications />
     <Router>
       <Routes>
 
@@ -60,6 +63,7 @@ const App = () => {
 
       </Routes>
     </Router>
+    </>
   );
 };
 
