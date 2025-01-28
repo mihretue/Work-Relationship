@@ -104,6 +104,40 @@ class CompanyViewSet(viewsets.ModelViewSet):
         company.forwarded_by = request.user
         company.save()
         return Response({"message": "Company forwarded to director successfully."}, status=status.HTTP_200_OK)
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        # Handle top-level company fields
+        company_data = {key: value for key, value in request.data.items() if key != "projects"}
+        serializer = self.get_serializer(instance, data=company_data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        # Handle nested projects
+        projects_data = request.data.get("projects", [])
+        for project_data in projects_data:
+            project_id = project_data.get("id")  # Use 'id' to differentiate existing/new projects
+            if project_id:
+                # Update existing project
+                try:
+                    project_instance = Project.objects.get(id=project_id, company=instance)
+                    project_serializer = ProjectSerializer(project_instance, data=project_data, partial=partial)
+                    project_serializer.is_valid(raise_exception=True)
+                    project_serializer.save()
+                except Project.DoesNotExist:
+                    return Response({"error": f"Project with id {project_id} does not exist."}, status=400)
+            else:
+                # Create a new project
+                project_data["company"] = instance.id  # Link to the company
+                project_serializer = ProjectSerializer(data=project_data)
+                project_serializer.is_valid(raise_exception=True)
+                project_serializer.save()
+
+        # Return updated company data
+        return Response(self.get_serializer(instance).data, status=200)
+    
 @permission_classes([IsDirector])
 @action(detail=False, methods=["get"])
 def forwarded_companies(self,request):
@@ -126,3 +160,5 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
         # Call the default implementation of create
         return super().create(request, *args, **kwargs)
+    
+    
