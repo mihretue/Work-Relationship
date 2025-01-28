@@ -416,6 +416,8 @@ const handleNavigation =()=>{
                             value={formData.phone_number}
                             onChange={handleChange}
                             required
+                            pattern="[0-9]{10}"
+                            title="Enter a valid phone number (10 digits)."
                         />
                     </div>
                     <div className="form-row">
@@ -426,8 +428,9 @@ const handleNavigation =()=>{
                             required
                         >
                             <option value="">Select Company Type</option>
-                            <option value="Software Development">Software Development</option>
-                            <option value="Construction">Construction</option>
+                            <option value="contractor">Contractor</option>
+                            <option value="consultant">Consultant</option>
+                            <option value="unions">Unions</option>
                         </select>
                         <select
                             name="grade"
@@ -436,8 +439,14 @@ const handleNavigation =()=>{
                             required
                         >
                             <option value="">Select Grade</option>
-                            <option value="1">Grade A</option>
-                            <option value="2">Grade B</option>
+                            <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
                         </select>
                     </div>
                     <div className="form-row">
@@ -448,7 +457,7 @@ const handleNavigation =()=>{
                             required
                         >
                             <option value="">Select Organization</option>
-                            <option value="Tech Group">Tech Group</option>
+                            <option value="design and construction bureau">design and construction bureau</option>
                         </select>
                         <select
                             name="performance"
@@ -457,9 +466,13 @@ const handleNavigation =()=>{
                             required
                         >
                             <option value="">Select Performance</option>
-                            <option value="Excellent performance in AI development and software solutions.">
-                                Excellent performance in AI development and software solutions.
-                            </option>
+                            <option value="pending">pending</option>
+                            <option value="LG GOLD">LG GOLD</option>
+                            <option value="G">G</option>
+                            <option value="LY">LY</option>
+                            <option value="Y">Y</option>
+                            <option value="LR">LR</option>
+                            <option value="R BLACK">R BLACK</option>
                         </select>
                     </div>
                     {/* <textarea
@@ -494,13 +507,19 @@ const handleNavigation =()=>{
                             onChange={handleChange}
                             required
                         />
-                        <input
-                            name="categories"
-                            placeholder="Categories"
-                            value={formData.projects[0].categories}
+                       <select
+                            name="Catagories"
+                            value={formData.catagory}
                             onChange={handleChange}
                             required
-                        />
+                        >
+                            <option value="">Select catagory</option>
+                            <option value="GC">GC</option>
+                            <option value="BC GOLD">BC GOLD</option>
+                            <option value="RD">RD</option>
+                            <option value="WE">WE</option>
+                            <option value="ET">ET</option>
+                        </select>
                     </div>
                     <div className="form-row">
                         <select
