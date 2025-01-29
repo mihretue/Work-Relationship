@@ -12,7 +12,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = fields = ['id','tin_number', 'manager_name', 'company_name', 'phone_number', 'company_type', 'grade', 'organization', 'performance', 'remark', 'approved','forwarded_to_director', 'forwarded_by', 'projects']
+        fields = fields = ['id','tin_number', 'manager_name', 'company_name', 'phone_number', 'company_type', 'grade', 'organization', 'performance', 'remark', 'approved','forwarded_to_director', 'forwarded_by', 'projects','created_at']
 
     def create(self, validated_data):
         projects_data = validated_data.pop('projects', [])

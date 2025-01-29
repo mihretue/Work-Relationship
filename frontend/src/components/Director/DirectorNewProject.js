@@ -3,9 +3,11 @@ import { Modal, Button, Select } from "@mantine/core";
 import { MantineReactTable } from "mantine-react-table";
 import "../../styles/NewProject.css";
 import { Navigate, useNavigate } from "react-router-dom";
-import { getAllCompanies, createProject, forwardToDirector, StatusUpdate } from "../../service/api";
+import { getAllCompanies, createProject, forwardToDirector, StatusUpdate,editCompany } from "../../service/api";
 import { FaCreativeCommonsNcJp } from "react-icons/fa";
 import ProjectStatusUpdate from "./ProjectStatusUpdate";
+import { showErrorNotification,showSuccessNotification, showAlertNotification } from "../../common/notifications";
+
 const DirectorNewProject = () => {
     const [data, setData] = useState([]);
     const [refetch, setRefetch] = useState(false);
@@ -15,7 +17,7 @@ const DirectorNewProject = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [updateModalOpen, setUpdateModalOpen] = useState(false); // State for the modal
     // const [selectedCompany, setSelectedCompany] = useState(null); 
-
+const [isUpdateOpen, setIsUpdateOpen] = useState(false)
     const [formData, setFormData] = useState({
         tin_number: "",
         manager_name: "",
@@ -87,7 +89,7 @@ const DirectorNewProject = () => {
             console.log("Response from API:", response);
 
             // Update the project list for the table
-            setProjects((prevProjects) => [
+            setData((prevProjects) => [
                 ...prevProjects,
                 { ...updatedFormData, id: projects.length + 1 },
             ]);
@@ -118,9 +120,11 @@ const DirectorNewProject = () => {
                     },
                 ],
             });
+          showSuccessNotification("Created Successfully!")
             setRefetch(true)
         } catch (error) {
             console.error("Error creating project:", error);
+          showErrorNotification(`Error creating project: ${error}`,"Error")
         }
     };
 
@@ -168,30 +172,36 @@ const DirectorNewProject = () => {
         localStorage.setItem("projects", JSON.stringify(updatedProjects));
     };
 
-    const handleEdit = (project) => {
-        setFormData(project);
-        setIsModalOpen(true);
-    };
-
-    const handleView = (project) => {
-        setSelectedProject(project); // Set the selected project data
-        setViewModalOpen(true); // Open the view modal
-    };
+   
+    const handleView=()=>{
+        console.log("view")
+    }
 
     const handleForward = (rowData) => {
         const { id } = rowData; // Extract the ID of the item to be forwarded
-
+      //   setProjects((prevProjects) =>
+      //     prevProjects.map((project) =>
+      //         project.id === id ? { ...project, status: 'Forwarding...' } : project
+      //     )
+      // );
         forwardToDirector(
             id,
             (data) => {
-                alert("Project forwarded successfully!");
+                // alert("Project forwarded successfully!");
+            showSuccessNotification("Project forwarded successfully!")
                 console.log("Response Data:", data);
                 setRefetch((prev) => !prev);
+            setData((prevData) =>
+              prevData.map((row) =>
+                row.id === id ? { ...row, forwarded_to_director: true } : row
+              )
+            );
             },
             (error) => {
                 // Error callback
                 console.error("Error forwarding project:", error);
-                alert(error.message || "Failed to forward project. Please try again.");
+                // alert(error.message || "Failed to forward project. Please try again.");
+          showErrorNotification("Failed to forward project. Please try again." || error.message )
             }
         );
     };
@@ -208,10 +218,19 @@ const DirectorNewProject = () => {
         setSelectedCompany(rowData);
         setUpdateModalOpen(true); // Open the modal
     };
-
+    const handleEditModal = (rowData)=>{
+        setSelectedCompany(rowData)
+        setIsUpdateOpen(true)
+    }
+const closeEditModal = ()=>{
+  setIsUpdateOpen(false)
+  setSelectedCompany(null)
+  setStatus("")
+}
     const handleStatusUpdate = () => {
         if (!selectedCompany || !status) {
-            alert("Please select a status before updating."); // Validate input
+            // alert("Please select a status before updating."); 
+            showAlertNotification("Please select a status before updating.","Warning")
             return;
         }
         const { id: companyId, projects } = selectedCompany;
@@ -222,18 +241,50 @@ const DirectorNewProject = () => {
             projectId,
             status,
             (data) => {
-                alert("Project status updated successfully!");
+                
+            showSuccessNotification("Project status updated successfully!",'success')
                 console.log("Response Data:", data);
                 setRefetch((prev) => !prev);
                 closeModal()
             },
             (error) => {
                 console.error("Error updating project status:", error);
-                alert(error.message || "Failed to updating project status. Please try again.");
+                showErrorNotification("Failed to update project status. Please try again." || error.message )
+          // alert(error.message || "Failed to updating project status. Please try again.");
             }
         )
 
     }
+
+    const handleEdit =()=>{
+        if(!selectedCompany){
+            showAlertNotification("Please select a Company before updating", 'Warning')
+        }
+        const {id:companyId} = selectedCompany;
+
+        editCompany(
+            companyId,
+            (data) => {
+                showAlertNotification("Company updated successfully!","Warning")
+                // alert("Company updated successfully!");
+                console.log("Response Data:", data);
+                setRefetch((prev) => !prev);
+                closeModal()
+                },
+                (error) => {
+                    console.error("Error updating company:", error);
+                    // alert(error.message ||"Failed to updating company. Please try again.");
+                    showErrorNotification("Failed to updating company. Please try again.")
+                    }
+        )
+    }
+
+
+
+
+
+
+
 
     const closeModal = () => {
         setSelectedCompany(null);
@@ -329,7 +380,7 @@ const DirectorNewProject = () => {
                                 <Button
                                     size="xs"
                                     color="yellow"
-                                    onClick={() => handleEdit(row.original)}
+                                    onClick={() => handleEditModal(row.original)}
                                 >
                                     Edit
                                 </Button>
@@ -586,36 +637,154 @@ const DirectorNewProject = () => {
                     <Button onClick={handleStatusUpdate} mt="md">
                         Update Status
                     </Button>
-                </form>
+                    </form>
             </Modal>
             <Modal
-                opened={viewModalOpen}
-                onClose={() => setViewModalOpen(false)}
-                title="Project Details"
-                size="lg"
-                styles={{
-                    content: {
-                        margin: '20px auto',
-                        marginTop: '60px',
-                        width: '80%',
-                        maxWidth: '800px',
-                    },
-                }}
+        opened={isUpdateOpen}
+        onClose={closeEditModal}
+        title="Edit Company Information"
+        size={890}
+        styles={{
+          content: {
+            margin: '20px auto',
+            marginTop: '60px',
+          },
+        }}
+      >
+        <form onSubmit={handleSubmit} style={{ marginTop: '6rem' }}>
+          <div className="form-row">
+            <input
+              name="tin_number"
+              placeholder="TIN Number"
+              value={formData.tin_number}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="company_name"
+              placeholder="Company Name"
+              value={formData.company_name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-row">
+            <input
+              name="manager_name"
+              placeholder="Manager Name"
+              value={formData.manager_name}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="phone_number"
+              placeholder="Phone Number"
+              value={formData.phone_number}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-row">
+            <select
+              name="company_type"
+              value={formData.company_type}
+              onChange={handleChange}
+              required
             >
-                {selectedProject && (
-                    <div>
-                        <h3>Project Name: {selectedProject.project_name}</h3>
-                        <p><strong>TIN Number:</strong> {selectedProject.tin_number}</p>
-                        <p><strong>Manager Name:</strong> {selectedProject.manager_name}</p>
-                        <p><strong>Company Name:</strong> {selectedProject.company_name}</p>
-                        <p><strong>Phone Number:</strong> {selectedProject.phone_number}</p>
-                        <p><strong>Project Cost:</strong> {selectedProject.projects[0].project_cost}</p>
-                        <p><strong>Year:</strong> {selectedProject.projects[0].year}</p>
-                        <p><strong>Status:</strong> {selectedProject.projects[0].status}</p>
-                        <p><strong>Remarks:</strong> {selectedProject.projects[0].project_remark}</p>
-                    </div>
-                )}
-            </Modal>
+              <option value="">Select Company Type</option>
+              <option value="Software Development">Software Development</option>
+              <option value="Construction">Construction</option>
+            </select>
+            <select
+              name="grade"
+              value={formData.grade}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Grade</option>
+              <option value="1">Grade A</option>
+              <option value="2">Grade B</option>
+            </select>
+          </div>
+          <div className="form-row">
+            <select
+              name="organization"
+              value={formData.organization}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Organization</option>
+              <option value="Tech Group">Tech Group</option>
+            </select>
+            <select
+              name="performance"
+              value={formData.performance}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Performance</option>
+              <option value="Excellent performance in AI development and software solutions.">
+                Excellent performance in AI development and software solutions.
+              </option>
+            </select>
+          </div>
+          <div className="form-row">
+            <input
+              name="project_name"
+              placeholder="Project Name"
+              value={formData.projects[0].project_name}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="project_cost"
+              placeholder="Project Cost"
+              type="number"
+              value={formData.projects[0].project_cost}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-row">
+            <input
+              name="year"
+              placeholder="Year"
+              type="number"
+              value={formData.projects[0].year}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="categories"
+              placeholder="Categories"
+              value={formData.projects[0].categories}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-row">
+            <select
+              name="status"
+              value={formData.projects[0].status}
+              onChange={handleChange}
+              required
+            >
+              <option value="unfinished">Active</option>
+              <option value="ongoing">Pending</option>
+              <option value="finished">Completed</option>
+            </select>
+          </div>
+          <div className="form-row">
+            <textarea
+              name="project_remark"
+              placeholder="Project Remarks"
+              value={formData.projects[0].project_remark}
+              onChange={handleChange}
+            ></textarea>
+          </div>
+          <button onClick={handleEdit} type="submit">Submit</button>
+        </form>
+      </Modal>
         </div>
     );
 };

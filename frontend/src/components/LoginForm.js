@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import "../styles/LoginForm.css"; // Ensure this path is correct
-
+import { showErrorNotification, showSuccessNotification } from "../common/notifications";
 const LoginForm = () => {
   const { loading } = useContext(AuthContext);
   const [username, setUsername] = useState("");
@@ -46,9 +46,11 @@ const LoginForm = () => {
           navigate("/admin/dashboard");
         }
       }
+      showSuccessNotification("Logged In Successfully.","success")
     } catch (error) {
       console.error("Login error:", error.message);
-      setError("Login failed. Please try again.");
+      // setError("Login failed. Please try again.");
+      showErrorNotification("Login failed. Please try again.",'Error')
     }
   };
 

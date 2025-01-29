@@ -4,6 +4,7 @@ import { MantineReactTable } from "mantine-react-table"; // Import Mantine React
 import "../../styles/NewProject.css"; // Import your custom CSS
 import { createProject, getAllCompanies, forwardToDirector } from "../../service/api";
 import { CustomizableMantineTable } from "../../common/customeTable";
+import { showErrorNotification, showSuccessNotification } from "../../common/notifications";
 
 const NewProject = () => {
   const [formData, setFormData] = useState({
@@ -83,7 +84,7 @@ const NewProject = () => {
 
       // Close the modal
       setIsModalOpen(false);
-
+      showSuccessNotification("Successfullly Created.")
       // Reset the form
       setFormData({
         tin_number: "",
@@ -109,6 +110,7 @@ const NewProject = () => {
       });
     } catch (error) {
       console.error("Error creating project:", error);
+      showErrorNotification(`Error Creating : ${error}`)
     }
   };
   const [data, setData] = useState([]);
@@ -118,11 +120,12 @@ const NewProject = () => {
   const fetchCompanies = async () => {
     setIsLoading(true);
     try {
-      const companyData = await getAllCompanies();
-      console.log("Company DAta", companyData[1].projects)
+      const companyData = await getAllCompanies(); 
+      
       setData(companyData); // Set the fetched data
     } catch (error) {
       console.error("Error loading companies:", error);
+      showErrorNotification(`Error loading companies: ${error.message}`);
     } finally {
       setIsLoading(false);
     }

@@ -28,3 +28,4 @@ __pycache__/
 
 # Ignore SQLite database
 db.sqlite3
+
