@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation after login
 import '../styles/LoginPage.css'; // Import a CSS file for styling
-
+import { showAlertNotification } from '../common/notifications';
 const LoginPage = () => {
     const [role, setRole] = useState('');
     const [username, setUsername] = useState('');
@@ -18,7 +18,8 @@ const LoginPage = () => {
         } else if (role === 'director' && username === 'director' && password === 'password') {
             navigate('/director/dashboard'); // Redirect to the director dashboard
         } else {
-            alert('Invalid credentials');
+            // alert('Invalid credentials');
+            showAlertNotification("Invalid credentials")
         }
     };
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Textarea, Button, Select } from '@mantine/core';
 import { StatusUpdate } from '../../service/api';
+import { showAlertNotification, showErrorNotification, showSuccessNotification } from '../../common/notifications';
 const ProjectStatusUpdate = ({ rowData, onStatusUpdate }) => {
   const [selectedCompany, setSelectedCompany] = useState(null); // Track selected company for the modal
   const [remark, setRemark] = useState(""); // Track remark input
@@ -14,7 +15,7 @@ const ProjectStatusUpdate = ({ rowData, onStatusUpdate }) => {
 
   const handleStatus = () => {
     if (!status) {
-      alert("Please select a status.");
+      showAlertNotification("Please select a status.")
       return;
     }
 
@@ -28,14 +29,14 @@ const ProjectStatusUpdate = ({ rowData, onStatusUpdate }) => {
     // Call StatusUpdate API
     StatusUpdate(companyId, projectId, data)
       .then((response) => {
-        alert("Project status updated successfully!");
+        showSuccessNotification("Project status updated successfully!")
         console.log("Response Data:", response);
         onStatusUpdate(); // Trigger a refetch or update
         closeModal(); // Close modal
       })
       .catch((error) => {
-        console.error("Error updating project status:", error);
-        alert(error.message || "Failed to update project status. Please try again.");
+        
+        showErrorNotification("Failed to update project status. Please try again.")
       });
   };
 

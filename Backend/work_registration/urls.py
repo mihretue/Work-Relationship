@@ -12,4 +12,5 @@ urlpatterns = [
     path('', include(router.urls)),  
     path('companies/<int:pk>/approve/', CompanyViewSet.as_view({'post': 'approve'}), name='company-approve'),
     path('companies/<int:company_id>/projects/<int:project_id>/status/', CompanyViewSet.as_view({'patch': 'update_project_status'})),
+    path('companies/<int:pk>/', CompanyViewSet.as_view({'put': 'update'}), name='company-detail')
 ]
