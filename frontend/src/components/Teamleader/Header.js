@@ -18,7 +18,6 @@ const Header = () => {
                 <Link to="/teamleader/dashboard" className="nav-item">Dashboard</Link>
                 <Link to="/teamleader/new-project" className="nav-item">New Project</Link>
                 <Link to="/teamleader/search" className="nav-item">Search</Link>
-                <Link to="/teamleader/reports" className="nav-item">Reports</Link>
                 <button className="logout" onClick={handleLogout} style={{ backgroundColor: 'transparent', border: 'none', color: 'white', cursor: 'pointer' }}>Logout</button>
             </nav>
         </header>
