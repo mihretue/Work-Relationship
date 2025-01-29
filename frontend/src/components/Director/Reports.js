@@ -4,7 +4,6 @@ import { useState } from 'react';
 import amharicfont from "../../common/washrab.ttf"
 // import { getAllCompanies } from '../../service/api';
 import { fetchAllCompany } from './FetchingForReport';
-import { amharicFont } from '../../common/base64';
 const Reports = ({ projects }) => {
     const [companyData, setCompanyData] = useState([])
     const [totalProjects,setTotalProjects] = useState()
