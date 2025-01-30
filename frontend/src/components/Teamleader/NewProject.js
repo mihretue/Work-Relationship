@@ -115,7 +115,20 @@ const NewProject = () => {
   };
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false); // State for the modal
+  const [selectedCompany, setSelectedCompany] = useState(null); 
+  const [isUpdateOpen, setIsUpdateOpen] = useState(false)
+  const [status, setStatus] = useState("");
 
+  const handleEditModal = (rowData)=>{
+    setSelectedCompany(rowData)
+    setIsUpdateOpen(true)
+}
+  const closeEditModal = ()=>{
+    setIsUpdateOpen(false)
+    setSelectedCompany(null)
+    setStatus("")
+  }
   // Fetch companies on component mount
   const fetchCompanies = async () => {
     setIsLoading(true);
@@ -176,6 +189,9 @@ const NewProject = () => {
         project_status: project.status
       });
     });
+    acc.sort((a,b)=>{
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
 
     return acc;
   }, []);
@@ -247,15 +263,16 @@ const NewProject = () => {
                 >
                   Forward
                 </Button>
-              </>
-              )}
-            <Button
+                <Button
               size="xs"
               color="yellow"
-              onClick={() => handleEdit(row.original)}
+              onClick={() => handleEditModal(row.original)}
             >
               Edit
             </Button>
+              </>
+              )}
+            
           </div>
         )
       },
@@ -429,8 +446,9 @@ const NewProject = () => {
               onChange={handleChange}
               required
             >
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
+                <option value="unfinished">Active</option>
+                <option value="ongoing">Pending</option>
+                <option value="finished">Completed</option>
             </select>
           </div>
           <div className="form-row">
@@ -444,7 +462,152 @@ const NewProject = () => {
           <button type="submit">Submit</button>
         </form>
       </Modal>
-
+<Modal
+        opened={isUpdateOpen}
+        onClose={closeEditModal}
+        title="Edit Company Information"
+        size={890}
+        styles={{
+          content: {
+            margin: '20px auto',
+            marginTop: '60px',
+          },
+        }}
+      >
+        <form onSubmit={handleSubmit} style={{ marginTop: '6rem' }}>
+          <div className="form-row">
+            <input
+              name="tin_number"
+              placeholder="TIN Number"
+              value={formData.tin_number}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="company_name"
+              placeholder="Company Name"
+              value={formData.company_name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-row">
+            <input
+              name="manager_name"
+              placeholder="Manager Name"
+              value={formData.manager_name}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="phone_number"
+              placeholder="Phone Number"
+              value={formData.phone_number}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-row">
+            <select
+              name="company_type"
+              value={formData.company_type}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Company Type</option>
+              <option value="Software Development">Software Development</option>
+              <option value="Construction">Construction</option>
+            </select>
+            <select
+              name="grade"
+              value={formData.grade}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Grade</option>
+              <option value="1">Grade A</option>
+              <option value="2">Grade B</option>
+            </select>
+          </div>
+          <div className="form-row">
+            <select
+              name="organization"
+              value={formData.organization}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Organization</option>
+              <option value="Tech Group">Tech Group</option>
+            </select>
+            <select
+              name="performance"
+              value={formData.performance}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Performance</option>
+              <option value="Excellent performance in AI development and software solutions.">
+                Excellent performance in AI development and software solutions.
+              </option>
+            </select>
+          </div>
+          <div className="form-row">
+            <input
+              name="project_name"
+              placeholder="Project Name"
+              value={formData.projects[0].project_name}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="project_cost"
+              placeholder="Project Cost"
+              type="number"
+              value={formData.projects[0].project_cost}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-row">
+            <input
+              name="year"
+              placeholder="Year"
+              type="number"
+              value={formData.projects[0].year}
+              onChange={handleChange}
+              required
+            />
+            <input
+              name="categories"
+              placeholder="Categories"
+              value={formData.projects[0].categories}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="form-row">
+            <select
+              name="status"
+              value={formData.projects[0].status}
+              onChange={handleChange}
+              required
+            >
+              <option value="unfinished">Active</option>
+              <option value="ongoing">Pending</option>
+              <option value="finished">Completed</option>
+            </select>
+          </div>
+          <div className="form-row">
+            <textarea
+              name="project_remark"
+              placeholder="Project Remarks"
+              value={formData.projects[0].project_remark}
+              onChange={handleChange}
+            ></textarea>
+          </div>
+          <button onClick={handleEdit} type="submit">Submit</button>
+        </form>
+            </Modal>
       {/* Modal for Viewing Project Details */}
       <Modal
         opened={viewModalOpen}

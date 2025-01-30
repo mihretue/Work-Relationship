@@ -7,9 +7,10 @@ import { getAllCompanies, createProject, forwardToDirector, StatusUpdate,editCom
 import { FaCreativeCommonsNcJp } from "react-icons/fa";
 import ProjectStatusUpdate from "./ProjectStatusUpdate";
 import { showErrorNotification,showSuccessNotification, showAlertNotification } from "../../common/notifications";
-
+import useFetchData from "../../common/useFetchData";
 const DirectorNewProject = () => {
-    const [data, setData] = useState([]);
+    // const [data, setData] = useState([]);
+    const {data,loading,error,updateRow} = useFetchData()
     const [refetch, setRefetch] = useState(false);
     const [selectedCompany, setSelectedCompany] = useState(null); // Track selected company for the modal
     // const [remark, setRemark] = useState(""); // Track remark input
@@ -89,10 +90,10 @@ const [isUpdateOpen, setIsUpdateOpen] = useState(false)
             console.log("Response from API:", response);
 
             // Update the project list for the table
-            setData((prevProjects) => [
-                ...prevProjects,
-                { ...updatedFormData, id: projects.length + 1 },
-            ]);
+            // setData((prevProjects) => [
+            //     ...prevProjects,
+            //     { ...updatedFormData, id: projects.length + 1 },
+            // ]);
 
             // Close the modal
             setIsModalOpen(false);
@@ -128,18 +129,18 @@ const [isUpdateOpen, setIsUpdateOpen] = useState(false)
         }
     };
 
-    const fetchCompanies = async () => {
-        setIsLoading(true);
-        try {
-            const companyData = await getAllCompanies();
-            console.log("Company DAta", companyData[1].projects)
-            setData(companyData); // Set the fetched data
-        } catch (error) {
-            console.error("Error loading companies:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    // const fetchCompanies = async () => {
+    //     setIsLoading(true);
+    //     try {
+    //         const companyData = await getAllCompanies();
+    //         console.log("Company DAta", companyData[1].projects)
+    //         setData(companyData); // Set the fetched data
+    //     } catch (error) {
+    //         console.error("Error loading companies:", error);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
     const resetForm = () => {
         setFormData({
@@ -191,11 +192,7 @@ const [isUpdateOpen, setIsUpdateOpen] = useState(false)
             showSuccessNotification("Project forwarded successfully!")
                 console.log("Response Data:", data);
                 setRefetch((prev) => !prev);
-            setData((prevData) =>
-              prevData.map((row) =>
-                row.id === id ? { ...row, forwarded_to_director: true } : row
-              )
-            );
+            updateRow(id,{forwarded_to_director:true})
             },
             (error) => {
                 // Error callback
@@ -279,6 +276,8 @@ const closeEditModal = ()=>{
         )
     }
 
+    
+
 
 
 
@@ -292,9 +291,9 @@ const closeEditModal = ()=>{
         setStatus("");
     };
 
-    useEffect(() => {
-        fetchCompanies()
-    }, []);
+    // useEffect(() => {
+    //     fetchCompanies()
+    // }, []);
 
 
 
@@ -408,6 +407,8 @@ const closeEditModal = ()=>{
     const handleNavigation = () => {
         navigate('/director/new-projects/approve-projects')
     }
+    if(loading) return <p>Loading ...</p>
+    if(error) return <p>Error Loading Data.</p>
     return (
         <div className="new-project">
             <Button size={16} onClick={() => setIsModalOpen(true)}>
@@ -784,7 +785,7 @@ const closeEditModal = ()=>{
           </div>
           <button onClick={handleEdit} type="submit">Submit</button>
         </form>
-      </Modal>
+            </Modal>
         </div>
     );
 };
