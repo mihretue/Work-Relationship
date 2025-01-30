@@ -71,7 +71,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
         # Check for unfinished projects
         unfinished_projects = company.projects.filter(status="unfinished")
         #Check for Unfinished Projects in other companies with the same tin
-        other_unfinished_projects_same_tin = (Company.objects.filter(tin_number=company.tin_number).exclude(id=company.id).filter(status="unfinished"))
+        other_unfinished_projects_same_tin = (Project.objects.filter(company__tin_number=company.tin_number).exclude(company=company.id).filter(status="unfinished").distinct())
         if unfinished_projects.exists() or other_unfinished_projects_same_tin.exists():
             # Require a remark for unfinished projects
             if not remark:
