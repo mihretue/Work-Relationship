@@ -6,6 +6,11 @@ from .serializers import ProjectSerializer, CompanySerializer , ProjectStatusUpd
 from rest_framework.exceptions import ValidationError
 from .permissions import IsTeamLeader, IsDirector, IsTeamLeaderOrDirector
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+
+
+
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.prefetch_related('projects').all()
     serializer_class = CompanySerializer
@@ -47,6 +52,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             raise ValidationError(serializer.errors)
+    
     # @permission_classes([IsDirector])
     @action(detail=False, methods=['get'], url_path='search-by-tin')
     def search_by_tin(self, request):
@@ -105,6 +111,8 @@ class CompanyViewSet(viewsets.ModelViewSet):
         company.save()
         return Response({"message": "Company forwarded to director successfully."}, status=status.HTTP_200_OK)
     
+    
+    
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -161,4 +169,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
         # Call the default implementation of create
         return super().create(request, *args, **kwargs)
     
-    
+
+class DeleteProjectView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, company_id, project_id):
+        try:
+            # Fetch the company and project
+            company = Company.objects.get(id=company_id)
+            project = company.projects.get(id=project_id)
+
+            # Mark the project as deleted (soft delete)
+            project.deleted = True
+            project.save()
+
+            return Response({"message": "Project marked as deleted."}, status=status.HTTP_200_OK)
+        except Company.DoesNotExist:
+            return Response({"error": "Company not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Project.DoesNotExist:
+            return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
