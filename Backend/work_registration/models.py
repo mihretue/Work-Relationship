@@ -1,6 +1,7 @@
 from django.db import models
 from accounts.models import User
 from datetime import date
+
 # Company Model
 class Company(models.Model):
     tin_number = models.CharField(max_length=50, unique=True)
@@ -16,6 +17,7 @@ class Company(models.Model):
     forwarded_to_director = models.BooleanField(default=False)
     forwarded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="forwarded_company")
     created_at = models.DateField(auto_now_add=True)
+    
     def __str__(self):
         return self.company_name
     
@@ -34,5 +36,6 @@ class Project(models.Model):
     categories = models.CharField(max_length=200)  # Could be changed to ManyToManyField if categories are predefined
     status = models.CharField(max_length=50, choices=STATUS_CHOICES,default="unfinished")
     project_remark = models.TextField(blank=True, null=True)
+    deleted = models.BooleanField(default=False)
     def __str__(self):
         return self.project_name
