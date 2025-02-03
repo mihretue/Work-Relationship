@@ -1,5 +1,6 @@
 import { getApiUrl } from "../utils/getApi";
 import axios from "axios";
+import { showAlertNotification } from "../common/notifications";
 const API_URL = getApiUrl()
 // import { Navigate } from "react-router-dom";
 
@@ -253,6 +254,7 @@ export const StatusUpdate = async(companyId,projectId,status)=>{
 }
 
 
+
 export const editCompany = async (companyId,updateData)=>{
   const accessToken = localStorage.getItem("accessToken");
   const url = `${API_URL}companies/${companyId}/`;
@@ -277,5 +279,30 @@ export const editCompany = async (companyId,updateData)=>{
             return error;
             });
             
-
 } 
+
+export const deleteProjects = async (companyId, projectId) => {
+  const accessToken = localStorage.getItem("accessToken");
+  const url = `${API_URL}companies/${companyId}/projects/${projectId}/delete/`;
+
+  const options = {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+      }
+  };
+
+  fetch(url, options)
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error(response.statusText);
+  })
+  .catch(error => {
+    console.error('Error deleting project:', error);
+    showAlertNotification("Error deleting project", "Error");
+  });
+
+};
