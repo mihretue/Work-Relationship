@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/Users.css'; // Corrected import path
 import { createUser } from '../../service/api';
-import { showErrorNotification, showSuccessNotification } from '../../common/notifications';
+import {showErrorNotification, showSuccessNotification} from "../../../src/common/notifications"
 
 const Users = () => {
     const [userData, setUserData] = useState({

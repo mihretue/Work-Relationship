@@ -85,7 +85,7 @@ const DirectorDashboard = () => {
     return (
         <div style={{ padding: '20px', marginTop: '20px' }}>
             <DirectorHeader />
-            <div style={{marginTop:'2rem',padding:'0.5rem'}}>
+            <div style={{ marginTop: '2rem', padding: '0.5rem' }}>
                 <Button onClick={generatePDF}>Report</Button>
             </div>
             <div className="dashboard-content">
