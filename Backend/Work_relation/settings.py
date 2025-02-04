@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'rest_framework_simplejwt',
-    'whitenoise.runserver_nostatic',
+    
 ]
 
 REST_FRAMEWORK = {
