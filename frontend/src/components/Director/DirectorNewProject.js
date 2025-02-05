@@ -250,32 +250,46 @@ const DirectorNewProject = () => {
   }
   const handleStatusUpdate = () => {
     if (!selectedCompany || !status) {
-      // alert("Please select a status before updating."); 
-      showAlertNotification("Please select a status before updating.", "Warning")
+      showAlertNotification("Please select a status before updating.", "Warning");
       return;
     }
     const { id: companyId, projects } = selectedCompany;
     const [{ id: projectId }] = projects;
-    console.log("Updating status for:", { companyId, projectId, status });
+
+    console.log("Updating status for:", { companyId, projectId, status }); // Debugging log
+
     StatusUpdate(
       companyId,
       projectId,
       status,
       (data) => {
+        console.log("Response Data:", data); // Debugging log
+        showSuccessNotification("Project status updated successfully!", 'success');
 
-        showSuccessNotification("Project status updated successfully!", 'success')
-        console.log("Response Data:", data);
-        setRefetch((prev) => !prev);
-        closeModal()
+        // Update the local state immediately
+        setData((prevData) =>
+          prevData.map((company) =>
+            company.id === companyId
+              ? {
+                ...company,
+                projects: company.projects.map((project) =>
+                  project.id === projectId
+                    ? { ...project, status } // Update the status
+                    : project
+                ),
+              }
+              : company
+          )
+        );
+
+        closeUpdateModal(); // Close modal immediately after update
       },
       (error) => {
         console.error("Error updating project status:", error);
-        showErrorNotification("Failed to update project status. Please try again." || error.message)
-        // alert(error.message || "Failed to updating project status. Please try again.");
+        showErrorNotification("Failed to update project status. Please try again." || error.message);
       }
-    )
-
-  }
+    );
+  };
 
   const handleEdit = () => {
     if (!selectedCompany) {
@@ -821,18 +835,27 @@ const DirectorNewProject = () => {
         onClose={() => setViewModalOpen(false)}
         title="Project Details"
         size="lg"
+        styles={{
+          content: {
+            margin: '20px auto',
+            padding: '20px',
+            borderRadius: '8px',
+            backgroundColor: '#f9f9f9',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          },
+        }}
       >
         {selectedProject && (
           <div>
-            <h3>Project Name: {selectedProject.project_name}</h3>
+            <h3 style={{ color: '#333' }}>Project Name: {selectedProject.project_name}</h3>
             <p><strong>TIN Number:</strong> {selectedProject.tin_number}</p>
             <p><strong>Manager Name:</strong> {selectedProject.manager_name}</p>
             <p><strong>Company Name:</strong> {selectedProject.company_name}</p>
             <p><strong>Phone Number:</strong> {selectedProject.phone_number}</p>
-            <p><strong>Project Cost:</strong> {selectedProject.projects[0].project_cost}</p>
+            <p><strong>Project Cost:</strong> ${selectedProject.projects[0].project_cost}</p>
             <p><strong>Year:</strong> {selectedProject.projects[0].year}</p>
             <p><strong>Status:</strong> {selectedProject.projects[0].status}</p>
-            <p><strong>Remarks:</strong> {selectedProject.projects[0].project_remark}</p>
+            <p><strong>Remarks:</strong> {selectedProject.projects[0].project_remark || "No remarks available."}</p>
           </div>
         )}
       </Modal>
