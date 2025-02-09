@@ -13,7 +13,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const url = "http://127.0.0.1:8000/api/login/";
+    const url = "https://work-relationship-back-2.onrender.com/api/login/";
     try {
       const response = await fetch(url, {
         method: "POST",

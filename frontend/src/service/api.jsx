@@ -49,7 +49,7 @@ export const getHeader = () => {
     throw new Error("Access token is missing. Please log in.");
   }
   return { 
-    method: "GET", // or POST/PUT/DELETE depending on your use case
+    method: "GET", 
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${accessToken}`
@@ -134,7 +134,7 @@ export const createUser = (body)=>{
 
 export const login = async (username, password) => {
   try {
-      const url = 'http://127.0.0.1:8000/api/login/';
+      const url = 'https://work-relationship-back-2.onrender.com/api/login/';
       console.log("Making request to:", url); // Log the URL being used
 
       const response = await axios.post("/api/login/", {
