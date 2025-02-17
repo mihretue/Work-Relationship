@@ -1,6 +1,6 @@
 import { getApiUrl } from "../utils/getApi";
 import axios from "axios";
-import { showAlertNotification } from "../common/notifications";
+import { showAlertNotification, showErrorNotification, showSuccessNotification } from "../common/notifications";
 const API_URL = getApiUrl()
 // import { Navigate } from "react-router-dom";
 
@@ -134,8 +134,8 @@ export const createUser = (body)=>{
 
 export const login = async (username, password) => {
   try {
-      const url = 'https://work-relationship-back-2.onrender.com/api/login/';
-      console.log("Making request to:", url); // Log the URL being used
+      const url = 'http://127.0.0.1:8000/api/login/';
+      console.log("Making request to:", url); 
 
       const response = await axios.post("/api/login/", {
           username,
@@ -182,6 +182,7 @@ export const forwardToDirector = async (Id,onSuccess,onError) => {
     }
   } catch (error) {
     console.error("Error forwarding project:", error);
+    showErrorNotification("Error forwarding project:", 'Erorr')
     onError(error);
   }
 };
@@ -282,27 +283,68 @@ export const editCompany = async (companyId,updateData)=>{
 } 
 
 export const deleteProjects = async (companyId, projectId) => {
-  const accessToken = localStorage.getItem("accessToken");
-  const url = `${API_URL}companies/${companyId}/projects/${projectId}/delete/`;
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const url = `${API_URL}companies/${companyId}/projects/${projectId}/delete/`;
 
-  const options = {
+    const options = {
       method: 'DELETE',
       headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
       }
-  };
+    };
 
-  fetch(url, options)
-  .then(response => {
-    if (response.ok) {
-      return response.json();
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete: ${response.status} ${response.statusText}`);
     }
-    throw new Error(response.statusText);
-  })
-  .catch(error => {
-    console.error('Error deleting project:', error);
-    showAlertNotification("Error deleting project", "Error");
-  });
 
+    // Check if there's a JSON response
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
+
+    console.log("Delete API Response:", data);
+    return data; // Ensure response is returned
+
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    showAlertNotification("Error deleting project", "Error");
+    return null; // Prevents 'undefined' errors
+  }
 };
+
+export const getDeletedProjects = async(companyId)=>{
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const url = `${API_URL}companies/${companyId}/projects/delete/`;
+
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    };
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch deleted projects: ${response.status} ${response.statusText}`);
+    }
+
+    // Check if there's a JSON response
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
+
+    console.log("fetch Delete API Response:", data);
+    return data; // Ensure response is returned
+
+  } catch (error) {
+    console.error("Error fetching deleted project:", error);
+    showAlertNotification("Error deleting project", "Error");
+    return null; // Prevents 'undefined' errors
+  }
+
+}
