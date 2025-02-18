@@ -188,3 +188,12 @@ class DeleteProjectView(APIView):
             return Response({"error": "Company not found."}, status=status.HTTP_404_NOT_FOUND)
         except Project.DoesNotExist:
             return Response({"error": "Project not found."}, status=status.HTTP_404_NOT_FOUND)
+    def get(self, request, company_id):
+        try:
+            company = Company.objects.get(id=company_id)
+            deleted_projects = company.projects.filter(deleted=True)  # Filter projects
+
+            serializer = ProjectSerializer(deleted_projects, many=True)  # Serialize data
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Company.DoesNotExist:
+            return Response({"error": "Company not found."}, status=status.HTTP_404_NOT_FOUND)
