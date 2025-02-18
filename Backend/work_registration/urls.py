@@ -14,4 +14,5 @@ urlpatterns = [
     path('companies/<int:company_id>/projects/<int:project_id>/status/', CompanyViewSet.as_view({'patch': 'update_project_status'})),
     path('companies/<int:pk>/', CompanyViewSet.as_view({'put': 'update'}), name='company-detail'),
     path('companies/<int:company_id>/projects/<int:project_id>/delete/', DeleteProjectView.as_view(), name='delete-project'),
+    #  path('companies/<int:company_id>/projects/deleted/', DeletedProjectsView.as_view(), name='deleted-projects')
 ]

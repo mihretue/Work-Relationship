@@ -20,6 +20,7 @@ const DirectorNewProject = () => {
     const [updateModalOpen, setUpdateModalOpen] = useState(false); // State for the modal
     // const [selectedCompany, setSelectedCompany] = useState(null); 
     const [isUpdateOpen, setIsUpdateOpen] = useState(false)
+    const [isStatusUpdateOpen, setIsStatusUpdateOpen]= useState(false)
     const [formData, setFormData] = useState({
         tin_number: "",
         manager_name: "",
@@ -187,9 +188,22 @@ const DirectorNewProject = () => {
 
         console.log("Selected Row Data:", rowData)
         setSelectedCompany(rowData);
+<<<<<<< HEAD
         setUpdateModalOpen(true);
     };
 
+=======
+        
+        
+        setIsStatusUpdateOpen(true)
+    };
+    const handleDelateFlag = (rowData)=>{
+        console.log("Selected Row Data:", rowData)
+        setSelectedCompany(rowData);
+        handleDelete()
+    }
+    
+>>>>>>> acf56c0eb9c2ae4160662d1d313ba1323ab2b457
     const handleEditModal = (rowData) => {
         setSelectedCompany(rowData);
         setIsUpdateOpen(true)
@@ -225,6 +239,8 @@ const DirectorNewProject = () => {
         setStatus("")
     }
     const handleStatusUpdate = () => {
+        
+        setIsStatusUpdateOpen(false)
         if (!selectedCompany || !status) {
             // alert("Please select a status before updating."); 
             showAlertNotification("Please select a status before updating.", "Warning")
@@ -238,26 +254,84 @@ const DirectorNewProject = () => {
             projectId,
             status,
             (data) => {
+<<<<<<< HEAD
 
                 showSuccessNotification("Project status updated successfully!", 'success')
                 console.log("Response Data:", data);
                 setRefetch((prev) => !prev);
                 closeModal()
+=======
+                
+            showSuccessNotification("Project status updated successfully!",'success')
+            console.log("Response Data:", data);
+            // setRefetch((prev) => !prev);
+           
+            
+            updateRow(companyId,projectId,{deleted:true})
+               
+>>>>>>> acf56c0eb9c2ae4160662d1d313ba1323ab2b457
             },
+
             (error) => {
                 console.error("Error updating project status:", error);
                 showErrorNotification("Failed to update project status. Please try again." || error.message)
                 // alert(error.message || "Failed to updating project status. Please try again.");
             }
+
         )
+        
 
     }
 
-    const handleDelete = async (companyData) => {
-        if (!companyData || !companyData.projects || companyData.projects.length === 0) {
-            showAlertNotification("Please select a valid item to delete.", "Warning");
+    // const handleDelete = async () => {
+    //     if (!selectedCompany) {
+    //         // alert("Please select a status before updating."); 
+    //         showAlertNotification("Please select a status before updating.","Warning")
+    //         return;
+    //     }
+    //     const { id: companyId, projects } = selectedCompany;
+    //     const [{ id: projectId }] = projects;
+    //     console.log("project id",projectId,"company id", companyId)
+    //     // Optional: Confirm before deletion
+    //     const confirmed = window.confirm("Are you sure you want to delete this project?");
+    //     if (!confirmed) return;
+    
+    //     // Call the delete function
+    //     try {
+    //         const response = await deleteProjects(companyId, projectId);
+    //         if (response.success) {
+    //             showAlertNotification("Project deleted successfully.", "Success");
+    
+    //             // After deletion, update the UI
+    //             // setData(prevData =>
+    //             //     prevData.map(company => 
+    //             //         company.id === companyId
+    //             //             ? {
+    //             //                 ...company,
+    //             //                 projects: company.projects.map(project =>
+    //             //                     project.id === projectId ? { ...project, deleted: true } : project
+    //             //                 )
+    //             //             }
+    //             //             : company
+    //             //     )
+    //             // );
+    //             updateRow(companyId, {deleted:true});
+    //             showSuccessNotification("Project Deleted Successfully.","Success")
+    //         } else {
+    //             showAlertNotification("Failed to delete the project. Please try again.", "Error");
+    //         }
+    //     } catch (error) {
+    //         console.error("Error deleting project:", error);
+    //         showAlertNotification("An error occurred while deleting the project.", "Error");
+    //     }
+    // };
+
+    const handleDelete = async () => {
+        if (!selectedCompany || !selectedCompany.projects || selectedCompany.projects.length === 0) {
+            showAlertNotification("No projects found for the selected company.", "Warning");
             return;
         }
+<<<<<<< HEAD
 
         const { id: companyId, projects } = companyData;
         const [{ id: projectId }] = projects; // Assuming each company has at least one project
@@ -287,18 +361,47 @@ const DirectorNewProject = () => {
                 // );
                 updateRow(companyId, { deleted: true });
                 showSuccessNotification("Project Deleted Successfully.", "Success")
+=======
+    
+        const { id: companyId, projects } = selectedCompany;
+        const [{ id: projectId }] = projects;
+    
+        console.log("Deleting project:", { companyId, projectId });
+    
+        const confirmed = window.confirm("Are you sure you want to delete this project?");
+        if (!confirmed) return;
+    
+        try {
+            const response = await deleteProjects(companyId, projectId);
+            console.log("Delete API Response:", response);
+    
+            if (!response) {
+                throw new Error("No response from deleteProjects");
+            }
+    
+            // Check API's success response
+            if (response.success || response.message === "Deleted") {
+                showAlertNotification("Project deleted successfully.", "Success");
+                updateRow(companyId,projectId, { deleted: true });
+>>>>>>> acf56c0eb9c2ae4160662d1d313ba1323ab2b457
             } else {
                 showAlertNotification("Failed to delete the project. Please try again.", "Error");
             }
         } catch (error) {
             console.error("Error deleting project:", error);
-            showAlertNotification("An error occurred while deleting the project.", "Error");
+            showAlertNotification(`Error: ${error.message}`, "Error");
         }
     };
+<<<<<<< HEAD
 
 
     const handleEdit = () => {
         if (!selectedCompany) {
+=======
+    
+    const handleEdit =()=>{
+        if(!selectedCompany){
+>>>>>>> acf56c0eb9c2ae4160662d1d313ba1323ab2b457
             showAlertNotification("Please select a Company before updating", 'Warning')
         }
         const { id: companyId } = selectedCompany;
@@ -402,7 +505,7 @@ const DirectorNewProject = () => {
                             (<><Button
                                 size="xs"
                                 color="red"
-                                onClick={() => handleDelete(row.original)}
+                                onClick={() => handleDelateFlag(row.original)}
                             >
                                 Delete
                             </Button>
@@ -633,8 +736,8 @@ const DirectorNewProject = () => {
                 </Modal>
             </div>
             <Modal
-                opened={updateModalOpen}
-                onClose={closeUpdateModal}
+                opened={isStatusUpdateOpen}
+                onClose={()=>setIsStatusUpdateOpen(false)}
                 title="Update Project Status"
                 size={420}
                 styles={{
@@ -652,6 +755,7 @@ const DirectorNewProject = () => {
                         closeUpdateModal();
                     }}
                 >
+<<<<<<< HEAD
                     {/* Select for status */}
                     <Select
                         label="Status"
@@ -671,6 +775,34 @@ const DirectorNewProject = () => {
                         Update Status
                     </Button>
                 </form>
+=======
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            
+                        }}
+                    >
+                        {/* Select for status */}
+                        <Select
+                            label="Status"
+                            placeholder="Select status"
+                            value={status}
+                            
+                            onChange={(value) => setStatus(value)}
+                            data={[
+                                { value: 'finished', label: 'Finished' },
+                                { value: 'unfinished', label: 'Unfinished' },
+                                { value: 'ongoing', label: 'Ongoing' },
+                            ]}
+                            required
+                        />
+
+
+                        <Button onClick={()=>{ handleStatusUpdate();}} mt="md">
+                            Update Status
+                        </Button>
+                        </form>
+>>>>>>> acf56c0eb9c2ae4160662d1d313ba1323ab2b457
             </Modal>
             <Modal
                 opened={isUpdateOpen}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getAllCompanies } from "../service/api"; // Import your API function
+import { getAllCompanies, getDeletedProjects } from "../service/api"; // Import your API function
 
 const useFetchData = () => {
   const [data, setData] = useState([]);
@@ -20,7 +20,7 @@ const useFetchData = () => {
           ...company,
           projects: company.projects.filter(project => !project.deleted),  // Only keep non-deleted projects
         }));
-
+console.log("fileterd Data",filteredData[0].projects[0].deleted)
       setData(filteredData);
     } catch (err) {
       setError(err);
@@ -28,15 +28,29 @@ const useFetchData = () => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
-  const updateRow = (id, newValues) => {
-    setData((prevData) =>
-      prevData.map((row) => (row.id === id ? { ...row, ...newValues } : row))
+ 
+  useEffect(() => {
+    
+    fetchData();
+  }, [fetchData, refreshFlag]);
+
+  const updateRow = (companyId, projectId, newValues) => {
+    setData(prevData =>
+      prevData.map(company =>
+        company.id === companyId
+          ? {
+              ...company,
+              projects: company.projects.map(project =>
+                project.id === projectId ? { ...project, ...newValues } : project
+              ),
+            }
+          : company
+      )
     );
+    fetchData()
   };
+  
 
   const refreshData =(prevProjects)=>{
     
