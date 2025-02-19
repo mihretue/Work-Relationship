@@ -73,58 +73,61 @@ const NewProject = () => {
         ],
       };
 
+      console.log("Submitting project data:", updatedFormData); // Log the data being sent
+
       const response = await createProject(updatedFormData);
-      console.log("Response from API:", response);
+      console.log("Response from API:", response); // Log the API response
 
-      // Update the project list for the table
-      setProjects((prevProjects) => [
-        ...prevProjects,
-        { ...updatedFormData, id: projects.length + 1 },
-      ]);
+      if (response && response.success) { // Check if the response indicates success
+        setIsModalOpen(false);
+        showSuccessNotification("Successfully Created.");
 
-      // Close the modal
-      setIsModalOpen(false);
-      showSuccessNotification("Successfullly Created.")
-      // Reset the form
-      setFormData({
-        tin_number: "",
-        manager_name: "",
-        company_name: "",
-        phone_number: "",
-        company_type: "",
-        grade: "",
-        organization: "",
-        performance: "",
+        // Update the project list for the table
+        setProjects((prevProjects) => [
+          ...prevProjects,
+          { ...updatedFormData, id: prevProjects.length + 1 }, // Add the new project to the state
+        ]);
 
-        approved: false,
-        projects: [
-          {
-            project_name: "",
-            project_cost: "",
-            year: "",
-            categories: "",
-            status: "unfinished",
-            project_remark: "",
-          },
-        ],
-      });
+        // Reset the form
+        setFormData({
+          tin_number: "",
+          company_name: "",
+          phone_number: "",
+          company_type: "",
+          grade: "",
+          organization: "",
+          performance: "",
+          approved: false,
+          projects: [
+            {
+              project_name: "",
+              project_cost: "",
+              year: "",
+              categories: "",
+              status: "unfinished",
+              project_remark: "",
+            },
+          ],
+        });
+      } else {
+        throw new Error("Failed to create project."); // Handle failure case
+      }
     } catch (error) {
       console.error("Error creating project:", error);
-      showErrorNotification(`Error Creating : ${error}`)
+      showErrorNotification(`Error Creating: ${error.message}`);
     }
   };
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false); // State for the modal
-  const [selectedCompany, setSelectedCompany] = useState(null); 
+  const [selectedCompany, setSelectedCompany] = useState(null);
   const [isUpdateOpen, setIsUpdateOpen] = useState(false)
   const [status, setStatus] = useState("");
 
-  const handleEditModal = (rowData)=>{
-    setSelectedCompany(rowData)
-    setIsUpdateOpen(true)
-}
-  const closeEditModal = ()=>{
+  const handleEditModal = (rowData) => {
+    handleEdit(rowData); // Call the handleEdit function
+  };
+  const closeEditModal = () => {
     setIsUpdateOpen(false)
     setSelectedCompany(null)
     setStatus("")
@@ -133,8 +136,8 @@ const NewProject = () => {
   const fetchCompanies = async () => {
     setIsLoading(true);
     try {
-      const companyData = await getAllCompanies(); 
-      
+      const companyData = await getAllCompanies();
+
       setData(companyData); // Set the fetched data
     } catch (error) {
       console.error("Error loading companies:", error);
@@ -189,7 +192,7 @@ const NewProject = () => {
         project_status: project.status
       });
     });
-    acc.sort((a,b)=>{
+    acc.sort((a, b) => {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     })
 
@@ -197,8 +200,29 @@ const NewProject = () => {
   }, []);
   const handleEdit = (rowData) => {
     console.log("Editing data:", rowData);
-    // Add your edit logic here, such as populating the form with row data
-    setFormData(rowData);
+
+    // Set the form data with the selected project's details
+    setFormData({
+      tin_number: rowData.tin_number,
+      company_name: rowData.company_name,
+      phone_number: rowData.phone_number,
+      company_type: rowData.company_type,
+      grade: rowData.grade,
+      organization: rowData.organization,
+      performance: rowData.performance,
+      approved: rowData.approved,
+      projects: [
+        {
+          project_name: rowData.projects[0].project_name,
+          project_cost: rowData.projects[0].project_cost,
+          year: rowData.projects[0].year,
+          categories: rowData.projects[0].categories,
+          status: rowData.projects[0].status,
+          project_remark: rowData.projects[0].project_remark,
+        },
+      ],
+    });
+
     setIsModalOpen(true); // Open the modal for editing
   };
 
@@ -264,15 +288,15 @@ const NewProject = () => {
                   Forward
                 </Button>
                 <Button
-              size="xs"
-              color="yellow"
-              onClick={() => handleEditModal(row.original)}
-            >
-              Edit
-            </Button>
+                  size="xs"
+                  color="yellow"
+                  onClick={() => handleEditModal(row.original)}
+                >
+                  Edit
+                </Button>
               </>
               )}
-            
+
           </div>
         )
       },
@@ -306,9 +330,15 @@ const NewProject = () => {
         opened={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Create New Project"
-        size="lg"
+        size={890}
+        styles={{
+          content: {
+            margin: '20px auto',
+            marginTop: '60px'
+          },
+        }}
       >
-        <form onSubmit={handleSubmit} className="new-project">
+        <form onSubmit={handleSubmit} style={{ marginTop: '6rem' }}>
           <div className="form-row">
             <input
               name="tin_number"
@@ -339,7 +369,7 @@ const NewProject = () => {
               value={formData.phone_number}
               onChange={handleChange}
               required
-              pattern="[0-9]{10}" // Example for a 10-digit phone number
+              pattern="[0-9]{10}"
               title="Enter a valid phone number (10 digits)."
             />
           </div>
@@ -426,8 +456,8 @@ const NewProject = () => {
               required
             />
             <select
-              name="Catagories"
-              value={formData.catagory}
+              name="categories"
+              value={formData.projects[0].categories}
               onChange={handleChange}
               required
             >
@@ -442,27 +472,27 @@ const NewProject = () => {
           <div className="form-row">
             <select
               name="status"
-              value={formData.status}
+              value={formData.projects[0].status}
               onChange={handleChange}
               required
             >
-                <option value="unfinished">Active</option>
-                <option value="ongoing">Pending</option>
-                <option value="finished">Completed</option>
+              <option value="unfinished">Active</option>
+              <option value="ongoing">Pending</option>
+              <option value="finished">Completed</option>
             </select>
           </div>
           <div className="form-row">
             <textarea
               name="project_remark"
               placeholder="Project Remarks"
-              value={formData.project_remark}
+              value={formData.projects[0].project_remark}
               onChange={handleChange}
             ></textarea>
           </div>
           <button type="submit">Submit</button>
         </form>
       </Modal>
-<Modal
+      <Modal
         opened={isUpdateOpen}
         onClose={closeEditModal}
         title="Edit Company Information"
@@ -607,7 +637,7 @@ const NewProject = () => {
           </div>
           <button onClick={handleEdit} type="submit">Submit</button>
         </form>
-            </Modal>
+      </Modal>
       {/* Modal for Viewing Project Details */}
       <Modal
         opened={viewModalOpen}
